@@ -7,11 +7,14 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
+        "fomvasss/laravel-medialibrary-extension": "^6.1",
         "laravel/framework": "^11.31",
-        "laravel/tinker": "^2.9"
+        "laravel/tinker": "^2.9",
+        "spatie/laravel-medialibrary": "^11.12"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
+        "ka4ivan/laravel-api-debugger": "^1.0",
         "laravel/pail": "^1.1",
         "laravel/pint": "^1.13",
         "laravel/sail": "^1.26",
