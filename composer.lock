@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e41bd39a138224a4b914d0e3662c06de",
+    "content-hash": "f0dca7334c56e82964997fbfc33d033b",
     "packages": [
         {
             "name": "brick/math",
@@ -1189,6 +1189,76 @@
                 }
             ],
             "time": "2025-08-22T14:27:06+00:00"
+        },
+        {
+            "name": "ka4ivan/laravel-logger",
+            "version": "1.1.5",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ka4ivan/laravel-logger.git",
+                "reference": "2372453738972a82daa9b6ec04c06177c6edf87b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ka4ivan/laravel-logger/zipball/2372453738972a82daa9b6ec04c06177c6edf87b",
+                "reference": "2372453738972a82daa9b6ec04c06177c6edf87b",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/support": "^9.0|^10.0|^11.0|^12.0",
+                "php": "^8.0.2"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Ka4ivan\\LaravelLogger\\ServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "files": [
+                    "src/helpers.php"
+                ],
+                "psr-4": {
+                    "Ka4ivan\\LaravelLogger\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Kachula Ivan",
+                    "email": "ka4ivan.dev@gmail.com",
+                    "homepage": "https://github.com/ka4ivan",
+                    "role": "Architect & Developer"
+                },
+                {
+                    "name": "Raphaël Huchet",
+                    "homepage": "https://github.com/rap2hpoutre",
+                    "role": "Log Viewer Base"
+                }
+            ],
+            "description": "A Laravel package for advanced logging, providing structured logs, contextual information, and customizable log channels.",
+            "keywords": [
+                "debugging",
+                "error-tracking",
+                "laravel",
+                "log",
+                "log-management",
+                "logger",
+                "logging",
+                "model-changes",
+                "model-tracking",
+                "monitoring"
+            ],
+            "support": {
+                "issues": "https://github.com/ka4ivan/laravel-logger/issues",
+                "source": "https://github.com/ka4ivan/laravel-logger/tree/1.1.5"
+            },
+            "time": "2025-07-12T19:03:28+00:00"
         },
         {
             "name": "laravel/framework",
@@ -3789,6 +3859,78 @@
                 }
             ],
             "time": "2025-07-17T15:46:43+00:00"
+        },
+        {
+            "name": "spatie/laravel-web-tinker",
+            "version": "1.10.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/spatie/laravel-web-tinker.git",
+                "reference": "08f04b640d72c8987999e562fa0e0c5f86c12455"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/spatie/laravel-web-tinker/zipball/08f04b640d72c8987999e562fa0e0c5f86c12455",
+                "reference": "08f04b640d72c8987999e562fa0e0c5f86c12455",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/cookie": "^10.0|^11.0|^12.0",
+                "illuminate/session": "^10.0|^11.0|^12.0",
+                "illuminate/support": "^10.0|^11.0|^12.0",
+                "laravel/tinker": "^2.0",
+                "php": "^8.2"
+            },
+            "require-dev": {
+                "orchestra/testbench": "^8.0|^9.0|^10.0",
+                "phpunit/phpunit": "^9.0|^10.5|^11.5.3"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Spatie\\WebTinker\\WebTinkerServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Spatie\\WebTinker\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Freek Van der Herten",
+                    "email": "freek@spatie.be",
+                    "homepage": "https://spatie.be",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Artisan Tinker in your browser",
+            "homepage": "https://github.com/spatie/laravel-web-tinker",
+            "keywords": [
+                "Tinker",
+                "debug",
+                "development",
+                "laravel",
+                "spatie",
+                "web-tinker"
+            ],
+            "support": {
+                "issues": "https://github.com/spatie/laravel-web-tinker/issues",
+                "source": "https://github.com/spatie/laravel-web-tinker/tree/1.10.1"
+            },
+            "funding": [
+                {
+                    "url": "https://spatie.be/open-source/support-us",
+                    "type": "custom"
+                }
+            ],
+            "time": "2025-02-17T10:39:12+00:00"
         },
         {
             "name": "spatie/temporary-directory",
@@ -6785,6 +6927,68 @@
                 "source": "https://github.com/hamcrest/hamcrest-php/tree/v2.1.1"
             },
             "time": "2025-04-30T06:54:44+00:00"
+        },
+        {
+            "name": "ka4ivan/laravel-api-debugger",
+            "version": "2.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ka4ivan/laravel-api-debugger.git",
+                "reference": "e1173aabb300ed1ea31e9a53e55a238fee2688c2"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ka4ivan/laravel-api-debugger/zipball/e1173aabb300ed1ea31e9a53e55a238fee2688c2",
+                "reference": "e1173aabb300ed1ea31e9a53e55a238fee2688c2",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/support": "^9.0|^10.0|^11.0|^12.0",
+                "php": "^8.0.2"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Ka4ivan\\ApiDebugger\\ServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Ka4ivan\\ApiDebugger\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Kachula Ivan",
+                    "email": "ka4ivan.dev@gmail.com",
+                    "homepage": "https://github.com/ka4ivan",
+                    "role": "Architect & Developer"
+                }
+            ],
+            "description": "A debugging tool for Laravel APIs that provides request execution time and query profiling.",
+            "keywords": [
+                "api",
+                "debug",
+                "debugbar",
+                "kachula",
+                "laravel",
+                "monitoring",
+                "performance",
+                "profiler",
+                "query-log",
+                "request-debug"
+            ],
+            "support": {
+                "issues": "https://github.com/ka4ivan/laravel-api-debugger/issues",
+                "source": "https://github.com/ka4ivan/laravel-api-debugger/tree/2.0.0"
+            },
+            "time": "2025-07-28T19:55:15+00:00"
         },
         {
             "name": "laravel/pail",

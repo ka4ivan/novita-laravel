@@ -35,4 +35,7 @@ return [
         ],
     ],
 
+    'novita' => [
+        'key' => env('NOVITA_API_KEY', ''),
+    ],
 ];
