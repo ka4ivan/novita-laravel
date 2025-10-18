@@ -21,3 +21,11 @@ yarn-error.log
 /.nova
 /.vscode
 /.zed
+.DS_Store
+_ide_helper.php
+/public/docs
+/storage/media-library
+/public/vendor/adminlte
+/public/vendor/lte3
+/public/js
+/public/css
