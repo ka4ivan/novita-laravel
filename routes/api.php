@@ -9,6 +9,11 @@ Route::post('socialite/{provider}', [\App\Http\Auth\Api\Controllers\SocialiteCon
 
 Route::group(['middleware' => [\App\Http\Middleware\SetClientDomain::class]], function () {
 
+    // AI
+    Route::group(['prefix' => 'ai'], function () {
+        Route::get('models', [\App\Http\Client\Controllers\AIModelController::class, 'models']);
+    });
+
     // MEDIA
     Route::post('media', [\App\Http\Client\Controllers\MediaController::class, 'upload']);
     Route::delete('media/{media}', [\App\Http\Client\Controllers\MediaController::class, 'delete']);
@@ -18,5 +23,5 @@ Route::group(['middleware' => [\App\Http\Middleware\SetClientDomain::class]], fu
         Route::get('profile', [\App\Http\Client\Controllers\My\ProfileController::class, 'edit']);
         Route::post('profile', [\App\Http\Client\Controllers\My\ProfileController::class, 'update']);
         Route::delete('profile', [\App\Http\Client\Controllers\My\ProfileController::class, 'delete']);
-});
+    });
 });

@@ -52,7 +52,7 @@ class Novita
         ];
 
         return $this->client()
-            ->get('/model', $query)
+            ->get('/v3/model', $query)
             ->json() ?: [];
     }
 }
