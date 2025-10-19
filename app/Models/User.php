@@ -2,16 +2,23 @@
 
 namespace App\Models;
 
+use App\Models\Traits\HasDatetimeFormatterTz;
+use Fomvasss\MediaLibraryExtension\HasMedia\HasMedia;
+use Fomvasss\MediaLibraryExtension\HasMedia\InteractsWithMedia;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
-class User extends Authenticatable
+class User extends Authenticatable implements HasMedia
 {
     use HasFactory,
         Notifiable,
-        HasUuids;
+        HasUuids,
+        HasApiTokens,
+        HasDatetimeFormatterTz,
+        InteractsWithMedia;
 
     protected $guarded = [
         'id',
@@ -27,8 +34,21 @@ class User extends Authenticatable
         return [
             'extra' => 'array',
             'email_verified_at' => 'datetime',
+            'registered_at' => 'datetime',
             'password' => 'hashed',
             'balance' => 'float',
         ];
+    }
+
+    protected array $mediaSingleCollections = ['avatar'];
+
+    /**
+     * Socialite auth мережі.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function socialites()
+    {
+        return $this->hasMany(Socialite::class);
     }
 }

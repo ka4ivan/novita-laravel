@@ -54,7 +54,7 @@ return [
     ],
 
     'temporary' => [
-        'model' => \Fomvasss\MediaLibraryExtension\Models\MediaTemporary::class,
+        'model' => \App\Models\MediaTemporary::class,
         'cleartime' => 60 * 24, // in minutes
     ],
 ];

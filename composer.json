@@ -12,8 +12,12 @@
         "php": "^8.2",
         "fomvasss/laravel-medialibrary-extension": "^6.2",
         "ka4ivan/laravel-logger": "^1",
+        "laravel-lang/common": "^6.7",
         "laravel/framework": "^12.0",
+        "laravel/sanctum": "^4.0",
+        "laravel/socialite": "^5.23",
         "laravel/tinker": "^2.10.1",
+        "lorisleiva/laravel-actions": "^2.9",
         "spatie/laravel-medialibrary": "^11.15",
         "spatie/laravel-web-tinker": "^1.10"
     },

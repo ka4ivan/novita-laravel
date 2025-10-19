@@ -9,10 +9,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('media', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
 
-            $table->morphs('model');
-            $table->uuid()->nullable()->unique();
+            $table->uuidMorphs('model');
+            $table->uuid('uuid')->nullable()->unique();
             $table->string('collection_name');
             $table->string('name');
             $table->string('file_name');
@@ -27,7 +27,7 @@ return new class extends Migration
             $table->json('generated_conversions');
             $table->json('responsive_images');
             $table->unsignedInteger('order_column')->nullable()->index();
-            $table->unsignedBigInteger('user_id')->nullable()->after('is_active');
+            $table->uuid('user_id')->nullable()->after('is_active');
 
             $table->nullableTimestamps();
         });
