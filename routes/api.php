@@ -12,6 +12,8 @@ Route::group(['middleware' => [\App\Http\Middleware\SetClientDomain::class]], fu
     // AI
     Route::group(['prefix' => 'ai'], function () {
         Route::get('models', [\App\Http\Client\Controllers\AIModelController::class, 'models']);
+
+        Route::post('txt2img', [\App\Http\Client\Controllers\AIController::class, 'txt2img']);
     });
 
     // MEDIA

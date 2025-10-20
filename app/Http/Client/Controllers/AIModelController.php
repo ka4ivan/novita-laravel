@@ -4,7 +4,6 @@ namespace App\Http\Client\Controllers;
 
 use App\Http\Client\Requests\AIModelRequest;
 use App\Services\Novita\Novita;
-use Illuminate\Http\Request;
 
 final class AIModelController extends Controller
 {

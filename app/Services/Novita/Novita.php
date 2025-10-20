@@ -43,16 +43,46 @@ class Novita
     {
         $query = [
             'filter.visibility' => 'public',
-            'filter.types' => $query['type'] ?? 'lora',
-            'filter.query' => $query['q'] ?? null,
+            'filter.types' => $query['filter.types'] ?? 'lora',
+            'filter.query' => $query['filter.query'] ?? null,
             'filter.is_nsfw' => false,
-            'filter.is_sdxl' => $query['is_sdxl'] ?? null,
-            'pagination.limit' => $query['limit'] ?? 100,
-            'pagination.cursor' => $query['cursor'] ?? null,
+            'filter.is_sdxl' => $query['filter.is_sdxl'] ?? null,
+            'pagination.limit' => $query['pagination.limit'] ?? 100,
+            'pagination.cursor' => $query['pagination.cursor'] ?? null,
         ];
 
         return $this->client()
             ->get('/v3/model', $query)
             ->json() ?: [];
+    }
+
+    /**
+     * @param array $request
+     * @param string|null $webhookUrl
+     *
+     * @return string
+     *
+     * @throws ConnectionException
+     * @throws NovitaException
+     */
+    public function txt2img(array $request, ?string $webhookUrl = null): string
+    {
+        $data = [
+            'request' => $request,
+        ];
+
+        if ($webhookUrl) {
+            $data['extra']['webhook']['url'] = $webhookUrl;
+
+            $data['extra']['webhook']['test_mode']['enabled'] = true;
+            $data['extra']['webhook']['test_mode']['return_task_status'] = 'TASK_STATUS_SUCCEED';
+        }
+
+        $response = $this->client()
+            ->post('/v3/async/txt2img', $data);
+
+        $this->validateResponse($response);
+
+        return $response->json('task_id');
     }
 }
