@@ -5,29 +5,37 @@ namespace App\Http\Webhooks\Controllers;
 use App\Events\AITaskFailed;
 use App\Events\AITaskSucceed;
 use App\Http\Client\Controllers\Controller;
+use App\Models\AIJob;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Ka4ivan\LaravelLogger\Facades\Llog;
 
 final class AIController extends Controller
 {
-    public function handle(Request $request, string $ai, string $socketId)
+    public function handle(Request $request, string $ai)
     {
         Llog::info($ai, $request->all());
 
+        $aiJobId = $request->get('aiJobId');
+
         if ($ai === 'novita') {
-            $this->handleNovita($request, $socketId);
+            $this->handleNovita($request, $aiJobId);
         }
 
         return 'ok';
     }
 
-    private function handleNovita(Request $request, string $socketId)
+    private function handleNovita(Request $request, string $aiJobId)
     {
+        $aiJob = AIJob::find($aiJobId);
         $eventType = $request->input('event_type');
 
         if ($eventType !== 'ASYNC_TASK_RESULT') {
             Llog::warning('Novita: unknown event type', [$eventType]);
+
+            $aiJob->update([
+                'status' => AIJob::STATUS_FAILED,
+            ]);
 
             return response()->json(null, JsonResponse::HTTP_NO_CONTENT);
         }
@@ -38,26 +46,36 @@ final class AIController extends Controller
 
         if (!in_array($task['task_type'], ['TXT_TO_IMG', 'IMG_TO_IMG', 'UPSCALE'])) {
             Llog::warning('Novita: unknown task type', [$task]);
+
+            $aiJob->update([
+                'status' => AIJob::STATUS_FAILED,
+            ]);
+
+            return response()->json(null, JsonResponse::HTTP_NO_CONTENT);
         }
 
         if ($task['status'] !== 'TASK_STATUS_SUCCEED') {
-            broadcast(new AITaskFailed($socketId, $task['task_id']));
+            broadcast(new AITaskFailed($aiJobId, $task['task_id']));
 
             Llog::warning('Novita: task not succeeded', [$task]);
+
+            $aiJob->update([
+                'status' => AIJob::STATUS_FAILED,
+            ]);
 
             return response()->json(null, JsonResponse::HTTP_NO_CONTENT);
         }
 
         foreach ($payload['images'] as $image) { // TODO
-            $m = Media::fromUrl($image['image_url']);
-            $m->append('links');
-
-            $media[] = $m;
-
-            $this->storeInCache($m);
+            // TODO скачати (підставити ключі)
+//            $aiJob->addMediaFromUrl($image['image_url'])->toMediaCollection('image');
         }
 
-        broadcast(new AITaskSucceed($socketId, $task['task_id'], $media));
+//        broadcast(new AITaskSucceed($aiJobId, $task['task_id'], $media));
+
+        $aiJob->update([
+            'status' => AIJob::STATUS_DONE,
+        ]);
 
         return response()->json(null, JsonResponse::HTTP_NO_CONTENT);
     }

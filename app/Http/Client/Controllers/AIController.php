@@ -3,6 +3,7 @@
 namespace App\Http\Client\Controllers;
 
 use App\Http\Client\Requests\AITxt2ImgRequest;
+use App\Models\AIJob;
 use App\Services\Novita\Novita;
 use Illuminate\Http\JsonResponse;
 
@@ -39,9 +40,14 @@ final class AIController extends Controller
      */
     public function txt2img(AITxt2ImgRequest $request, Novita $novita)
     {
+        // TODO винести в action
+        $aiJob = AIJob::create([
+            'type' => AIJob::TYPE_TXT2IMG,
+        ]);
+
         $webhookUrl = route('webhooks.ai.handle', [
             'novita',
-            'socketId' => $request->input('socket_id'),
+            'aiJobId' => $aiJob->id,
         ]);
 
         $taskId = $novita->txt2img(
@@ -51,6 +57,7 @@ final class AIController extends Controller
 
         return response()->json([
             'task_id' => $taskId,
+            'ai_job_id' => $aiJob->id,
         ], JsonResponse::HTTP_CREATED);
     }
 }
