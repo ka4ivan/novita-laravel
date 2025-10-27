@@ -6,7 +6,7 @@ use App\Models\User;
 use Illuminate\Support\Arr;
 use Lorisleiva\Actions\Concerns\AsAction;
 
-final class UpdateProfile
+final class UpdateProfileAction
 {
     use AsAction;
 

@@ -74,8 +74,8 @@ class Novita
         if ($webhookUrl) {
             $data['extra']['webhook']['url'] = $webhookUrl;
 
-            $data['extra']['webhook']['test_mode']['enabled'] = true;
-            $data['extra']['webhook']['test_mode']['return_task_status'] = 'TASK_STATUS_SUCCEED';
+//            $data['extra']['webhook']['test_mode']['enabled'] = true;
+//            $data['extra']['webhook']['test_mode']['return_task_status'] = 'TASK_STATUS_SUCCEED';
         }
 
         $response = $this->client()

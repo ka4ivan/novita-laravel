@@ -6,6 +6,7 @@ use App\Events\AITaskFailed;
 use App\Events\AITaskSucceed;
 use App\Http\Client\Controllers\Controller;
 use App\Models\AIJob;
+use App\Services\Novita\NovitaDownloader;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Ka4ivan\LaravelLogger\Facades\Llog;
@@ -66,12 +67,17 @@ final class AIController extends Controller
             return response()->json(null, JsonResponse::HTTP_NO_CONTENT);
         }
 
-        foreach ($payload['images'] as $image) { // TODO
-            // TODO скачати (підставити ключі)
-//            $aiJob->addMediaFromUrl($image['image_url'])->toMediaCollection('image');
+        foreach ($payload['images'] as $image) {
+            app()->bind(NovitaDownloader::class, function () {
+                return new NovitaDownloader();
+            });
+
+            config()->set('media-library.media_downloader', NovitaDownloader::class);
+\Llog::warning($image['image_url']);
+            $aiJob->addMediaFromUrl($image['image_url'])->toMediaCollection('image');
         }
 
-//        broadcast(new AITaskSucceed($aiJobId, $task['task_id'], $media));
+        broadcast(new AITaskSucceed($aiJobId, $task['task_id']));
 
         $aiJob->update([
             'status' => AIJob::STATUS_DONE,

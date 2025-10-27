@@ -24,7 +24,6 @@ class AITaskSucceed implements ShouldBroadcastNow
     public function __construct(
         public string $socketId,
         public string $taskId,
-        public array $media
     ) {
     }
 
@@ -57,7 +56,6 @@ class AITaskSucceed implements ShouldBroadcastNow
     {
         return [
             'task_id' => $this->taskId,
-            'media' => $this->media,
         ];
     }
 }

@@ -2,7 +2,7 @@
 
 namespace App\Http\Client\Controllers\My;
 
-use App\Actions\Users\UpdateProfile;
+use App\Actions\Users\UpdateProfileAction;
 use App\Http\Client\Controllers\Controller;
 use App\Http\Client\Requests\ProfileRequest;
 use App\Http\Client\Resources\ProfileResource;
@@ -78,7 +78,7 @@ final class ProfileController extends Controller
         /** @var User $user */
         $user = $request->user();
 
-        UpdateProfile::run($user, $request->all());
+        UpdateProfileAction::run($user, $request->all());
 
         $user->mediaManageRefresh($request->all());
 

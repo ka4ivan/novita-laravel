@@ -51,4 +51,9 @@ class User extends Authenticatable implements HasMedia
     {
         return $this->hasMany(Socialite::class);
     }
+
+    public function aijobs()
+    {
+        return $this->hasMany(AIJob::class);
+    }
 }

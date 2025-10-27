@@ -2,8 +2,10 @@
 
 namespace App\Http\Client\Controllers;
 
+use App\Actions\Users\UserOrGuestAction;
 use App\Http\Client\Requests\AITxt2ImgRequest;
 use App\Models\AIJob;
+use App\Models\User;
 use App\Services\Novita\Novita;
 use Illuminate\Http\JsonResponse;
 
@@ -40,8 +42,9 @@ final class AIController extends Controller
      */
     public function txt2img(AITxt2ImgRequest $request, Novita $novita)
     {
-        // TODO винести в action
-        $aiJob = AIJob::create([
+        $user = UserOrGuestAction::run($request->user(), $request->header('sguest'));
+
+        $aiJob = $user->aijobs()->create([
             'type' => AIJob::TYPE_TXT2IMG,
         ]);
 
