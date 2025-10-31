@@ -9,6 +9,9 @@ Route::post('socialite/{provider}', [\App\Http\Auth\Api\Controllers\SocialiteCon
 
 Route::group(['middleware' => [\App\Http\Middleware\SetClientDomain::class]], function () {
 
+    // APP
+    Route::get('app/glob', [\App\Http\Client\Controllers\AppController::class, 'glob']);
+
     // AI
     Route::group(['prefix' => 'ai'], function () {
         Route::get('models', [\App\Http\Client\Controllers\AIModelController::class, 'models']);

@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\Traits\HasDatetimeFormatterTz;
 use Fomvasss\MediaLibraryExtension\HasMedia\HasMedia;
 use Fomvasss\MediaLibraryExtension\HasMedia\InteractsWithMedia;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -55,5 +56,15 @@ class User extends Authenticatable implements HasMedia
     public function aijobs()
     {
         return $this->hasMany(AIJob::class);
+    }
+
+    /**
+     * @return Attribute
+     */
+    protected function fullname(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => trim($this->lastname . ' ' . $this->name),
+        );
     }
 }

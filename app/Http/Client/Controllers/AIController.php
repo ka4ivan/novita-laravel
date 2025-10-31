@@ -5,14 +5,13 @@ namespace App\Http\Client\Controllers;
 use App\Actions\Users\UserOrGuestAction;
 use App\Http\Client\Requests\AITxt2ImgRequest;
 use App\Models\AIJob;
-use App\Models\User;
 use App\Services\Novita\Novita;
 use Illuminate\Http\JsonResponse;
 
 final class AIController extends Controller
 {
     /**
-     * @api {post} /api/ai/txt2img 01. Зображення з тексту
+     * @api {post} /api/ai/txt2img 01. TXT2IMG
      * @apiVersion 1.0.0
      * @apiName AITxt2Img
      * @apiGroup AI
