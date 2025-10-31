@@ -31,6 +31,10 @@ final class AIController extends Controller
         $aiJob = AIJob::find($aiJobId);
         $eventType = $request->input('event_type');
 
+        if ($aiJob->status === AIJob::STATUS_DONE) {
+            return response()->json(null, JsonResponse::HTTP_NO_CONTENT);
+        }
+
         if ($eventType !== 'ASYNC_TASK_RESULT') {
             Llog::warning('Novita: unknown event type', [$eventType]);
 
@@ -73,7 +77,7 @@ final class AIController extends Controller
             });
 
             config()->set('media-library.media_downloader', NovitaDownloader::class);
-\Llog::warning($image['image_url']);
+
             $aiJob->addMediaFromUrl($image['image_url'])->toMediaCollection('image');
         }
 

@@ -22,7 +22,7 @@ class AITaskSucceed implements ShouldBroadcastNow
      * @param Media[] $media
      */
     public function __construct(
-        public string $socketId,
+        public string $aiJobId,
         public string $taskId,
     ) {
     }
@@ -35,7 +35,7 @@ class AITaskSucceed implements ShouldBroadcastNow
     public function broadcastOn(): array
     {
         return [
-            new Channel('ai.' . $this->socketId),
+            new Channel('ai.' . $this->aiJobId),
         ];
     }
 
