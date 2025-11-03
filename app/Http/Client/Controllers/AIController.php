@@ -16,7 +16,6 @@ final class AIController extends Controller
      * @apiName AITxt2Img
      * @apiGroup AI
      *
-     * @apiParam {String} socket_id UUID сокету клієнта
      * @apiParam {String{1-255}} model_name Назва моделі для генерації
      * @apiParam {String{1-1024}} prompt Текстовий запит для генерації
      * @apiParam {String{1-1024}} [negative_prompt] Негативний промпт (що потрібно уникати)

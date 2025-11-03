@@ -4,6 +4,6 @@
   "title": "API documentation",
   "url" : "",
   "order": [
-    "Authorisation"
+    "Authorisation", "App", "Profile", "Media", "AIModel", "AI"
   ]
 }
