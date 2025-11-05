@@ -72,6 +72,10 @@ final class SocialiteController extends Controller
                 ]);
 
         if ($user->wasRecentlyCreated) {
+            if ($avatar = $providerUser->getAvatar()) {
+                $user->addMediaFromUrl($avatar)->toMediaCollection('avatar');
+            }
+
             event(new UserRegistered($user));
         }
 

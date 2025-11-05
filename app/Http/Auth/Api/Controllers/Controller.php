@@ -2,6 +2,7 @@
 
 namespace App\Http\Auth\Api\Controllers;
 
+use App\Http\Client\Resources\MediaShowResource;
 use App\Models\User;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
@@ -14,7 +15,14 @@ class Controller extends BaseController
 
     protected function userResource(User $user): array
     {
-        return $user->only('id', 'name', 'middlename', 'email', 'phone', 'type', 'status');
+        $res = $user->only('id', 'name', 'middlename', 'email', 'phone', 'type', 'status');
+        $res['avatar'] = null;
+
+        if ($avatar = $user->getMainMedia('avatar')) {
+            $res['avatar'] = MediaShowResource::make($avatar);
+        }
+
+        return $res;
     }
 
     protected function authResource(User $user): array
