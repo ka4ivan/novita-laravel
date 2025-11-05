@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 // SOCIALITE
 Route::post('socialite/{provider}', [\App\Http\Auth\Api\Controllers\SocialiteController::class, 'socialLogin'])->name('socialite.oauth');
 
+Route::post('logout', [\App\Http\Auth\Api\Controllers\LoginController::class, 'logout'])->middleware('auth:sanctum');
 
 Route::group(['middleware' => [\App\Http\Middleware\SetClientDomain::class]], function () {
 
