@@ -20,8 +20,8 @@ final class AIController extends Controller
      * @apiParam {String{1-1024}} prompt Текстовий запит для генерації
      * @apiParam {String{1-1024}} [negative_prompt] Негативний промпт (що потрібно уникати)
      * @apiParam {Object[]} [loras] Масив LoRA моделей (макс. 5)
-     * @apiParam {String{1-255}} loras[].model_name Назва LoRA моделі
-     * @apiParam {Number{0-1}} loras[].strength Сила впливу LoRA
+     * @apiParam {String{1-255}} loras.model_name Назва LoRA моделі
+     * @apiParam {Number{0-1}} loras.strength Сила впливу LoRA
      * @apiParam {Object} [refiner] Налаштування додаткового рефайнера
      * @apiParam {Number{0-1}} [refiner.switch_at] Поріг перемикання для рефайнера
      * @apiParam {Number{128-2048}} width Ширина зображення
