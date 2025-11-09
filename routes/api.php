@@ -17,7 +17,9 @@ Route::group(['middleware' => [\App\Http\Middleware\SetClientDomain::class]], fu
     Route::group(['prefix' => 'ai'], function () {
         Route::get('models', [\App\Http\Client\Controllers\AIModelController::class, 'models']);
 
-        Route::post('txt2img', [\App\Http\Client\Controllers\AIController::class, 'txt2img']);
+        Route::group(['middleware' => 'auth:sanctum'], function () {
+            Route::post('txt2img', [\App\Http\Client\Controllers\AIController::class, 'txt2img']);
+        });
     });
 
     // MEDIA

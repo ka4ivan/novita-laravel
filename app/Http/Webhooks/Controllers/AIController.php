@@ -60,7 +60,7 @@ final class AIController extends Controller
         }
 
         if ($task['status'] !== 'TASK_STATUS_SUCCEED') {
-            broadcast(new AITaskFailed($aiJobId, $task['task_id']));
+            event(new AITaskFailed($aiJobId, $task['task_id']));
 
             Llog::warning('Novita: task not succeeded', [$task]);
 
@@ -81,7 +81,7 @@ final class AIController extends Controller
             $aiJob->addMediaFromUrl($image['image_url'])->toMediaCollection('image');
         }
 
-        broadcast(new AITaskSucceed($aiJobId, $task['task_id']));
+        event(new AITaskSucceed($aiJobId, $task['task_id']));
 
         $aiJob->update([
             'status' => AIJob::STATUS_DONE,
