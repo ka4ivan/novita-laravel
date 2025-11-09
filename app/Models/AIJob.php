@@ -6,11 +6,13 @@ use Fomvasss\MediaLibraryExtension\HasMedia\HasMedia;
 use Fomvasss\MediaLibraryExtension\HasMedia\InteractsWithMedia;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
+use Ka4ivan\LaravelLogger\Models\Traits\HasTracking;
 
 class AIJob extends Model implements HasMedia
 {
     use HasUuids,
-        InteractsWithMedia;
+        InteractsWithMedia,
+        HasTracking;
 
     const STATUS_WAITING = 'waiting'; // Щойно створене | очікує
     const STATUS_DONE = 'done'; // Виконано
@@ -31,6 +33,7 @@ class AIJob extends Model implements HasMedia
     ];
 
     protected array $mediaSingleCollections = ['image'];
+    protected array $mediaMultipleCollections = ['images'];
 
     protected function casts(): array
     {

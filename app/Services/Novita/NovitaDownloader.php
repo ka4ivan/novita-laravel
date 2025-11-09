@@ -12,17 +12,14 @@ class NovitaDownloader implements Downloader
 
     public function getTempFile(string $url): string
     {
-        $accessToken = config('services.novita.key');
-
         $context = stream_context_create([
             'http' => [
                 'header' => [
                     'User-Agent: Spatie MediaLibrary',
-//                    "Authorization: Bearer {$accessToken}"
                 ],
             ],
         ]);
-\Llog::warning($url);
+
         if (! $stream = @fopen($url, 'r', false, $context)) {
             throw UnreachableUrl::create($url);
         }

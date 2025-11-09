@@ -42,9 +42,16 @@ final class AIController extends Controller
     {
         $user = UserOrGuestAction::run($request->user(), $request->header('sguest'));
 
+        /** @var AIJob $aiJob */
         $aiJob = $user->aijobs()->create([
             'type' => AIJob::TYPE_TXT2IMG,
         ]);
+
+        // TODO видалити
+//        $aiJob->addMediaFromUrl('https://picsum.photos/300')->toMediaCollection('images');
+//        $aiJob->addMediaFromUrl('https://picsum.photos/300')->toMediaCollection('images');
+//        $aiJob->addMediaFromUrl('https://picsum.photos/300')->toMediaCollection('images');
+//        $aiJob->addMediaFromUrl('https://picsum.photos/300')->toMediaCollection('images');
 
         $webhookUrl = route('webhooks.ai.handle', [
             'novita',
