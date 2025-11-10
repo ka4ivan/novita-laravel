@@ -46,7 +46,7 @@ final class AIJobController extends Controller
         $aiJobs = $user->aijobs()
             ->latest()
             ->with(['media'])
-            ->get();
+            ->paginate(5);
 
         return AIJobResource::collection($aiJobs);
     }
