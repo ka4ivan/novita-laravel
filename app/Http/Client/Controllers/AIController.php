@@ -48,23 +48,23 @@ final class AIController extends Controller
         ]);
 
         // TODO видалити
-//        $aiJob->addMediaFromUrl('https://picsum.photos/300')->toMediaCollection('images');
-//        $aiJob->addMediaFromUrl('https://picsum.photos/300')->toMediaCollection('images');
-//        $aiJob->addMediaFromUrl('https://picsum.photos/300')->toMediaCollection('images');
-//        $aiJob->addMediaFromUrl('https://picsum.photos/300')->toMediaCollection('images');
+        $aiJob->addMediaFromUrl('https://picsum.photos/300')->toMediaCollection('images');
+        $aiJob->addMediaFromUrl('https://picsum.photos/300')->toMediaCollection('images');
+        $aiJob->addMediaFromUrl('https://picsum.photos/300')->toMediaCollection('images');
+        $aiJob->addMediaFromUrl('https://picsum.photos/300')->toMediaCollection('images');
 
         $webhookUrl = route('webhooks.ai.handle', [
             'novita',
             'aiJobId' => $aiJob->id,
         ]);
 
-        $taskId = $novita->txt2img(
-            $request->getData(),
-            $webhookUrl
-        );
+//        $taskId = $novita->txt2img(
+//            $request->getData(),
+//            $webhookUrl
+//        );
 
         return response()->json([
-            'task_id' => $taskId,
+            'task_id' => '123', // $taskId
             'ai_job_id' => $aiJob->id,
         ], JsonResponse::HTTP_CREATED);
     }

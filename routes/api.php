@@ -31,5 +31,11 @@ Route::group(['middleware' => [\App\Http\Middleware\SetClientDomain::class]], fu
         Route::get('profile', [\App\Http\Client\Controllers\My\ProfileController::class, 'edit']);
         Route::post('profile', [\App\Http\Client\Controllers\My\ProfileController::class, 'update']);
         Route::delete('profile', [\App\Http\Client\Controllers\My\ProfileController::class, 'delete']);
+
+        // FAVORITES
+        Route::group(['prefix' => 'favorites'], function () {
+            Route::get('medias', [\App\Http\Client\Controllers\My\FavoriteController::class, 'medias']);
+            Route::post('medias/{media}', [\App\Http\Client\Controllers\My\FavoriteController::class, 'media']);
+        });
     });
 });

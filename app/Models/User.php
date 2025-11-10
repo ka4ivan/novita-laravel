@@ -8,6 +8,7 @@ use Fomvasss\MediaLibraryExtension\HasMedia\InteractsWithMedia;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -58,6 +59,17 @@ class User extends Authenticatable implements HasMedia
         return $this->hasMany(AIJob::class);
     }
 
+    public function favorites()
+    {
+        return $this->hasMany(Favorite::class);
+    }
+
+    public function favoriteMedias()
+    {
+        return $this->favorites()
+            ->where('model_type', (new Media())->getMorphClass());
+    }
+
     /**
      * @return Attribute
      */
@@ -66,5 +78,22 @@ class User extends Authenticatable implements HasMedia
         return Attribute::make(
             get: fn () => trim($this->lastname . ' ' . $this->name),
         );
+    }
+
+    /**
+     * @param Model $model
+     * @return string
+     */
+    public function toggleFavorite(Model $model): string
+    {
+        if ($favorite = $this->favorites->where('model_id', $model->id)->first()) {
+            $favorite->delete();
+
+            return 'deleted';
+        }
+
+        $this->favorites()->create(['model_id' => $model->id, 'model_type' => $model->getMorphClass()]);
+
+        return 'added';
     }
 }
