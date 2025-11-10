@@ -18,15 +18,23 @@ final class FavoriteController extends Controller
      * @apiGroup Favorites
      *
      * @apiSuccessExample {json} Response-Example: HTTP/1.1 200 OK
-     *  {
-     *      "data": [
-     *          {
-     *              "id": "08575187-c317-4a11-9366-f983fadbb155",
-     *              "name": "2025-06-18_16-59",
-     *              "url": "http://test.test/storage/08575187-c317-4a11-9366-f983fadbb155/2025-06-18-16-59.jpg"
-     *          }
-     *      ]
-     *  }
+     *   {
+     *       "data": [
+     *           {
+     *               "id": "019a6f55-375d-7204-80fe-c96141b45694",
+     *               "name": "300",
+     *               "url": "http:\/\/novita.test\/storage\/019a6f55-375d-7204-80fe-c96141b45694\/300.jpeg",
+     *               "conversions": {
+     *                   "thumb": {
+     *                       "url": "http:\/\/novita.test\/storage\/019a6f55-375d-7204-80fe-c96141b45694\/conversions\/300-thumb.webp"
+     *                   }
+     *               },
+     *               "states": {
+     *                   "is_favorite": true
+     *               }
+     *           }
+     *       ]
+     *   }
      *
      * @apiErrorExample {json} Response-Error: HTTP/1.1 401 Unauthorized
      *  {

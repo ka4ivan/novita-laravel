@@ -32,6 +32,9 @@ Route::group(['middleware' => [\App\Http\Middleware\SetClientDomain::class]], fu
         Route::post('profile', [\App\Http\Client\Controllers\My\ProfileController::class, 'update']);
         Route::delete('profile', [\App\Http\Client\Controllers\My\ProfileController::class, 'delete']);
 
+        // AI
+        Route::get('ai/jobs', [\App\Http\Client\Controllers\My\AIJobController::class, 'index']);
+
         // FAVORITES
         Route::group(['prefix' => 'favorites'], function () {
             Route::get('medias', [\App\Http\Client\Controllers\My\FavoriteController::class, 'medias']);
