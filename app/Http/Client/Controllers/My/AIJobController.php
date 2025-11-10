@@ -8,7 +8,6 @@ use Illuminate\Http\Request;
 
 final class AIJobController extends Controller
 {
-
     /**
      * @api {get} /api/my/ai/jobs 1. Список згенерованих зображень
      * @apiVersion 1.0.0
@@ -16,28 +15,48 @@ final class AIJobController extends Controller
      * @apiGroup AIJobs
      *
      * @apiSuccessExample {json} Response-Example: HTTP/1.1 200 OK
-     *  {
-     *      "data": [
-     *          {
-     *              "id": "019a6f55-375d-7204-80fe-c96141b45694",
-     *              "name": "300",
-     *              "url": "http:\/\/novita.test\/storage\/019a6f55-375d-7204-80fe-c96141b45694\/300.jpeg",
-     *              "conversions": {
-     *                  "thumb": {
-     *                      "url": "http:\/\/novita.test\/storage\/019a6f55-375d-7204-80fe-c96141b45694\/conversions\/300-thumb.webp"
-     *                  }
-     *              },
-     *              "states": {
-     *                  "is_favorite": true
-     *              }
-     *          }
-     *      ]
-     *  }
+     * {
+     *   "data": [
+     *     {
+     *       "id": "019a6f55-3062-7084-9c6f-a05d00cfe3e1",
+     *       "images": [
+     *         {
+     *           "id": "019a6f55-3986-73d9-9d5b-5a35a047df4d",
+     *           "name": "300",
+     *           "url": "http://novita.test/storage/019a6f55-3986-73d9-9d5b-5a35a047df4d/300.jpeg",
+     *           "conversions": {
+     *             "thumb": {
+     *               "url": "http://novita.test/storage/019a6f55-3986-73d9-9d5b-5a35a047df4d/conversions/300-thumb.webp"
+     *             }
+     *           },
+     *           "states": {
+     *             "is_favorite": false
+     *           }
+     *         }
+     *       ]
+     *     }
+     *   ],
+     *   "links": {
+     *     "first": "http://novita.test/api/my/ai/jobs?page=1",
+     *     "last": "http://novita.test/api/my/ai/jobs?page=35",
+     *     "prev": null,
+     *     "next": "http://novita.test/api/my/ai/jobs?page=2"
+     *   },
+     *   "meta": {
+     *     "current_page": 1,
+     *     "from": 1,
+     *     "last_page": 35,
+     *     "path": "http://novita.test/api/my/ai/jobs",
+     *     "per_page": 1,
+     *     "to": 1,
+     *     "total": 35
+     *   }
+     * }
      *
      * @apiErrorExample {json} Response-Error: HTTP/1.1 401 Unauthorized
-     *  {
-     *     "message": "Unauthenticated"
-     *  }
+     * {
+     *   "message": "Unauthenticated"
+     * }
      */
     public function index(Request $request)
     {
@@ -46,7 +65,7 @@ final class AIJobController extends Controller
         $aiJobs = $user->aijobs()
             ->latest()
             ->with(['media'])
-            ->paginate(5);
+            ->paginate(10);
 
         return AIJobResource::collection($aiJobs);
     }

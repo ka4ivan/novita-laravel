@@ -46,6 +46,7 @@ final class FavoriteController extends Controller
         $user = $request->user();
 
         $items = $user->favoriteMedias()
+            ->latest()
             ->with(['model'])
             ->get();
 
