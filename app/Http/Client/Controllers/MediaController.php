@@ -4,9 +4,10 @@ namespace App\Http\Client\Controllers;
 
 use App\Http\Client\Resources\MediaUploadResource;
 use App\Http\Client\Requests\MediaUploadRequest;
+use App\Models\Media;
 use Fomvasss\MediaLibraryExtension\Actions\DeleteMediaFile;
 use Fomvasss\MediaLibraryExtension\Actions\UploadMediaTemporaryFile;
-use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use Illuminate\Http\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 final class MediaController  extends Controller
@@ -57,7 +58,33 @@ final class MediaController  extends Controller
     }
 
     /**
-     * @api {delete} /api/media/{id} 02. Видалити
+     * @api {get} /api/media/{media:id} 02. Скачати
+     * @apiVersion 1.0.0
+     * @apiName MediaDownload
+     * @apiGroup Media
+     */
+    public function download(Request $request, Media $media)
+    {
+        if ($media->model?->user_id !== auth()->id()) {
+            abort(403, trans('http-statuses.403'));
+        }
+
+        $absolutePath = public_path(str_replace('storage/', 'storage/', $media->getUrl()));
+        $fileName = $media->file_name;
+
+        if (!file_exists($absolutePath)) {
+            $absolutePath = $media->getPath();
+        }
+
+        if (!file_exists($absolutePath)) {
+            abort(404, trans('http-statuses.404'));
+        }
+
+        return response()->download($absolutePath, $fileName);
+    }
+
+    /**
+     * @api {delete} /api/media/{media:id} 03. Видалити
      * @apiVersion 1.0.0
      * @apiName MediaDelete
      * @apiGroup Media

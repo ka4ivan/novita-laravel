@@ -24,6 +24,7 @@ Route::group(['middleware' => [\App\Http\Middleware\SetClientDomain::class]], fu
 
     // MEDIA
     Route::post('media', [\App\Http\Client\Controllers\MediaController::class, 'upload']);
+    Route::get('media/{media}', [\App\Http\Client\Controllers\MediaController::class, 'download']);
     Route::delete('media/{media}', [\App\Http\Client\Controllers\MediaController::class, 'delete']);
 
     Route::group(['middleware' => 'auth:sanctum', 'prefix' => 'my'], function () {
