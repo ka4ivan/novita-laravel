@@ -59,6 +59,11 @@ class User extends Authenticatable implements HasMedia
         return $this->hasMany(AIJob::class);
     }
 
+    public function aimodels()
+    {
+        return $this->hasMany(AIModel::class);
+    }
+
     public function favorites()
     {
         return $this->hasMany(Favorite::class);

@@ -19,6 +19,10 @@ Route::group(['middleware' => [\App\Http\Middleware\SetClientDomain::class]], fu
 
         Route::group(['middleware' => 'auth:sanctum'], function () {
             Route::post('txt2img', [\App\Http\Client\Controllers\AIController::class, 'txt2img']);
+
+            // MY AI
+            Route::get('my/models', [\App\Http\Client\Controllers\My\AIModelController::class, 'index']);
+            Route::post('my/models', [\App\Http\Client\Controllers\My\AIModelController::class, 'store']);
         });
     });
 

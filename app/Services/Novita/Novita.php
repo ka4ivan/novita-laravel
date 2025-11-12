@@ -2,10 +2,12 @@
 
 namespace App\Services\Novita;
 
+use GuzzleHttp\Psr7\Utils;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
+use Symfony\Component\HttpFoundation\File\File;
 
 class Novita
 {
@@ -84,5 +86,77 @@ class Novita
         $this->validateResponse($response);
 
         return $response->json('task_id');
+    }
+
+    /**
+     * @param string $extension
+     * @return array
+     * @throws ConnectionException
+     * @throws NovitaException
+     */
+    public function getTrainingUploadData(string $extension): array
+    {
+        $response = $this->client()
+            ->post('/v3/assets/training_dataset', [
+                'file_extension' => $extension,
+            ]);
+
+        \Llog::info($response->body());
+
+        $this->validateResponse($response);
+
+        return $response->json();
+    }
+
+    /**
+     * @param array $uploadData
+     * @param File $file
+     * @return bool
+     * @throws ConnectionException
+     */
+    public function trainingUpload(array $uploadData, File $file): bool
+    {
+        $stream = Utils::streamFor(fopen($file->getRealPath(), 'r'));
+
+        $response = Http::withBody($stream, $file->getMimeType())
+            ->send($uploadData['method'], $uploadData['upload_url']);
+
+        return $response->successful();
+    }
+
+    /**
+     * @param array $request
+     * @return string
+     * @throws ConnectionException
+     * @throws NovitaException
+     */
+    public function trainingSubject(array $request): string
+    {
+        $response = $this->client()
+            ->post('/v3/training/subject', $request);
+        \Llog::info($response->body());
+
+        $this->validateResponse($response);
+
+        return $response->json('task_id');
+    }
+
+    /**
+     * @param string $taskId
+     * @return array
+     * @throws ConnectionException
+     * @throws NovitaException
+     */
+    public function trainingSubjectResult(string $taskId): array
+    {
+        $response = $this->client()
+            ->get('/training/subject', [
+                'task_id' => $taskId,
+            ]);
+        \Llog::info($response->body());
+
+        $this->validateResponse($response);
+
+        return $response->json();
     }
 }

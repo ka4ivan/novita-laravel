@@ -15,7 +15,7 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->string('extension');
             $table->text('caption');
-            $table->string('assets_id')->unique();
+            $table->string('assets_id')->nullable()->unique();
             $table->foreignUuid('user_id')->nullable()->constrained()->onDelete('SET NULL');
             $table->uuidMorphs('model');
             $table->timestamps();
