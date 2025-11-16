@@ -21,8 +21,8 @@ final class AIModelController extends Controller
      * @apiName AIModelMyModels
      * @apiGroup AIModelMy
      *
-     * @apiParam {Number} [page=1] Номер сторінки (за замовчуванням 1)
-     * @apiParam {Number} [per_page=15] Кількість елементів на сторінці (за замовчуванням 15)
+     * @apiParam {Number} [page=1] Номер сторінки
+     * @apiParam {Number} [per_page=15] Кількість елементів на сторінці
      *
      * @apiSuccessExample {json} Response-Example: HTTP/1.1 200 OK
      *  {
@@ -108,13 +108,16 @@ final class AIModelController extends Controller
      * @apiName AIModelMyModelsStore
      * @apiGroup AIModelMy
      *
-     * @apiParam {String} [q] Пошуковий запит
+     * @apiParam {String} name Назва моделі
+     * @apiParam {String=stable-diffusion-xl-base-1.0,dreamshaperXL09Alpha_alpha2Xl10_91562,protovisionXLHighFidelity3D_release0630Bakedvae_154359,v1-5-pruned-emaonly,epicrealism_naturalSin_121250,chilloutmix_NiPrunedFp32Fix,abyssorangemix3AOM3_aom3a3_10864,dreamshaper_8_93211,WFChild_v1.0,majichenmixrealistic_v10,realisticVisionV51_v51VAE_94301,sdxlUnstableDiffusers_v11_216694,realisticVisionV40_v40VAE_81510,epicrealismXL_v10_247189,somboy_v10_172675,yesmixXL_v10_283329,animagineXLV31_v31_325600} base_model Тип базової моделі
+     * @apiParam {File[]} files Масив файлів, які необхідно завантажити
+     * @apiParam {String[]} caption Масив підписів для файлів
      *
      * @apiSuccessExample {json} Response-Example: HTTP/1.1 200 OK
      *  {
      *      "data": {
      *          "message": "Модель успішно створено!"
-     *      },
+     *      }
      *  }
      */
     public function store(AIModelMyRequest $request, Novita $novita)
@@ -176,11 +179,11 @@ final class AIModelController extends Controller
             ])->toArray()
         ];
 
-        $aiModel->setAttribute('task_id', $novita->trainingSubject($AIModelRequest));
-        $aiModel->saveOrFail();
+//        $aiModel->setAttribute('task_id', $novita->trainingSubject($AIModelRequest));
+//        $aiModel->saveOrFail();
 
-        NovitaAIModelRefreshResult::dispatch($aiModel)
-            ->delay(NovitaAIModelRefreshResult::INTERVAL);
+//        NovitaAIModelRefreshResult::dispatch($aiModel)
+//            ->delay(NovitaAIModelRefreshResult::INTERVAL);
 
         return response()->json([
             'message' => trans('client.Модель успішно створено!'),

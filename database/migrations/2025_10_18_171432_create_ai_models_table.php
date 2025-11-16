@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('base_name')->nullable();
             $table->string('model_name')->nullable();
             $table->string('status');
+            $table->integer('progress')->default(0);
             $table->jsonb('options')->nullable();
             $table->json('extra')->nullable();
             $table->string('task_id')->nullable();

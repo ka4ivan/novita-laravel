@@ -8,10 +8,10 @@
     <b>Email:</b> {{ $email }}
 </div>
 <div>
-    <b>User ID:</b> {{ $userData->user_id }}
+    <b>User ID:</b> {{ $user->user_id }}
 </div>
 <div>
-    <b>Registration date:</b> {{ $userData->created_at->format('d.m.Y H:i:s') }}
+    <b>Registration date:</b> {{ $user->created_at->format('d.m.Y H:i:s') }}
 </div>
 <hr/>
 <br>
@@ -21,12 +21,12 @@
 <br>
 @php
     $AIModels = \App\Models\AIModel::query()
-                              ->where('user_id', $userData->user_id)
+                              ->where('user_id', $user->id)
                               ->where(fn($q) =>
-                                  $q->where('status', \App\Enums\AITrainingStatus::Created)
-                                      ->orWhere('status', \App\Enums\AITrainingStatus::Queuing)
-                                      ->orWhere('status', \App\Enums\AITrainingStatus::Training)
-                                      ->orWhere('status', \App\Enums\AITrainingStatus::Deploying))
+                                  $q->where('status', \App\Models\AIModel::STATUS_CREATED)
+                                      ->orWhere('status', \App\Models\AIModel::STATUS_QUEUING)
+                                      ->orWhere('status', \App\Models\AIModel::STATUS_TRAINING)
+                                      ->orWhere('status', \App\Models\AIModel::STATUS_DEPLOYING))
                               ->get()
 @endphp
 @if($AIModels->count())

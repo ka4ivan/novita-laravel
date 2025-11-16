@@ -14,7 +14,7 @@ final class AIModelMyRequest extends FormRequest
             'name' => [
                 'required',
                 'string',
-//                'unique:ai_models,name', // TODO Розкоментувати
+                'unique:ai_models,name',
                 'max:255',
             ],
             'base_model' => [
