@@ -89,6 +89,31 @@ class Novita
     }
 
     /**
+     * @param array $request
+     * @param string|null $webhookUrl
+     * @return string
+     * @throws ConnectionException
+     * @throws NovitaException
+     */
+    public function img2img(array $request, ?string $webhookUrl = null): string
+    {
+        $data = [
+            'request' => $request,
+        ];
+
+        if ($webhookUrl !== null) {
+            $data['extra']['webhook']['url'] = $webhookUrl;
+        }
+
+        $response = $this->client()
+            ->post('/v3/async/img2img', $data);
+
+        $this->validateResponse($response);
+
+        return $response->json('task_id');
+    }
+
+    /**
      * @param string $extension
      * @return array
      * @throws ConnectionException

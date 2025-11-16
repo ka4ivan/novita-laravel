@@ -6,17 +6,15 @@ use App\Enums\Novita\NovitaSampler;
 use App\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;
 
-final class AITxt2ImgRequest extends FormRequest
+final class AIImg2ImgRequest extends FormRequest
 {
     public function rules()
     {
         return [
             'model_name' => ['required', 'string', 'max:255'],
+            'image_base64' => ['required', 'string'],
             'prompt' => ['required', 'string', 'between:1,1024'],
             'negative_prompt' => ['string', 'between:1,1024'],
-            'loras' => ['array', 'max:5'],
-            'loras.*.model_name' => ['required', 'string', 'max:255'],
-            'loras.*.strength' => ['required', 'numeric', 'between:0,1'],
             'refiner' => ['array'],
             'refiner.switch_at' => ['required_with:refiner', 'numeric', 'between:0,1'],
             'width' => ['required', 'integer', 'between:128,2048'],
@@ -34,6 +32,7 @@ final class AITxt2ImgRequest extends FormRequest
     {
         return $this->only([
             'model_name',
+            'image_base64',
             'prompt',
             'negative_prompt',
             'width',

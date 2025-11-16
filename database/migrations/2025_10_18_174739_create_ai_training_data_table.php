@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('ai_training_data', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->string('extension');
-            $table->text('caption');
+            $table->text('caption')->nullable();
             $table->string('assets_id')->nullable()->unique();
             $table->foreignUuid('user_id')->nullable()->constrained()->onDelete('SET NULL');
             $table->uuidMorphs('model');

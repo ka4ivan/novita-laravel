@@ -3,10 +3,13 @@
 namespace App\Http\Client\Controllers;
 
 use App\Actions\Users\UserOrGuestAction;
+use App\Http\Client\Requests\AIImg2ImgRequest;
 use App\Http\Client\Requests\AITxt2ImgRequest;
 use App\Models\AIJob;
+use App\Models\AIModel;
 use App\Services\Novita\Novita;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Storage;
 
 final class AIController extends Controller
 {
@@ -48,23 +51,87 @@ final class AIController extends Controller
         ]);
 
         // TODO видалити
-        $aiJob->addMediaFromUrl('https://picsum.photos/300')->toMediaCollection('images');
-        $aiJob->addMediaFromUrl('https://picsum.photos/300')->toMediaCollection('images');
-        $aiJob->addMediaFromUrl('https://picsum.photos/300')->toMediaCollection('images');
-        $aiJob->addMediaFromUrl('https://picsum.photos/300')->toMediaCollection('images');
+//        $aiJob->addMediaFromUrl('https://picsum.photos/300')->toMediaCollection('images');
+//        $aiJob->addMediaFromUrl('https://picsum.photos/300')->toMediaCollection('images');
+//        $aiJob->addMediaFromUrl('https://picsum.photos/300')->toMediaCollection('images');
+//        $aiJob->addMediaFromUrl('https://picsum.photos/300')->toMediaCollection('images');
 
         $webhookUrl = route('webhooks.ai.handle', [
             'novita',
             'aiJobId' => $aiJob->id,
         ]);
 
-//        $taskId = $novita->txt2img(
-//            $request->getData(),
-//            $webhookUrl
-//        );
+        if ($request->input('loras')) {
+            $aiModel = AIModel::query()->with('data.media')->where('name', $request->input('loras.0.model_name'))->firstOrFail();
+            $aiTrainingData = $aiModel->data->first();
+            $media = $aiTrainingData->getFirstMedia('image');
+
+            $taskId = $novita->img2img(
+                array_merge($request->getData(), [
+                    'image_base64' => $media->toBase64(),
+                ]),
+                $webhookUrl
+            );
+        } else {
+            $taskId = $novita->txt2img(
+                $request->getData(),
+                $webhookUrl
+            );
+        }
 
         return response()->json([
-            'task_id' => '123', // $taskId
+            'task_id' => $taskId,
+            'ai_job_id' => $aiJob->id,
+        ], JsonResponse::HTTP_CREATED);
+    }
+
+    /**
+     * @api {post} /api/ai/img2img 01. IMG2IMG
+     * @apiVersion 1.0.0
+     * @apiName AITxt2Img
+     * @apiGroup AI
+     *
+     * @apiParam {String{1-255}} model_name Назва моделі для генерації
+     * @apiParam {String} image_base64 BASE64 зображення
+     * @apiParam {String{1-1024}} prompt Текстовий запит для генерації
+     * @apiParam {String{1-1024}} [negative_prompt] Негативний промпт (що потрібно уникати)
+     * @apiParam {Object} [refiner] Налаштування додаткового рефайнера
+     * @apiParam {Number{0-1}} [refiner.switch_at] Поріг перемикання для рефайнера
+     * @apiParam {Number{128-2048}} width Ширина зображення
+     * @apiParam {Number{128-2048}} height Висота зображення
+     * @apiParam {Number{1-8}} image_num Кількість зображень для генерації
+     * @apiParam {Number{1-100}} steps Кількість кроків генерації
+     * @apiParam {Number=-1+} seed Початкове зерно генерації (-1 — випадкове)
+     * @apiParam {Number{1-12}} [clip_skip] Кількість шарів CLIP для пропуску
+     * @apiParam {Number{1-30}} guidance_scale Масштаб керування (вплив prompt)
+     * @apiParam {String=enum(NovitaSampler)} sampler_name Назва семплера (наприклад: euler, ddim, dpmpp_2m)
+     *
+     * @apiSuccessExample {json} Response-Example: HTTP/1.1 200 OK
+     *  {
+     *      "task_id": "f10333f2-2dd7-4f56-a177-e3c02a774d9a"
+     *  }
+     */
+    public function img2img(AIImg2ImgRequest $request, Novita $novita)
+    {
+        $user = UserOrGuestAction::run($request->user(), $request->header('sguest'));
+
+        /** @var AIJob $aiJob */
+        $aiJob = $user->aijobs()->create([
+            'type' => AIJob::TYPE_TXT2IMG,
+        ]);
+
+        $webhookUrl = route('webhooks.ai.handle', [
+            'novita',
+            'aiJobId' => $aiJob->id,
+        ]);
+
+        $taskId = $novita->img2img(
+            $request->getData(),
+            $webhookUrl
+        );
+
+        return response()->json([
+            'task_id' => $taskId,
             'ai_job_id' => $aiJob->id,
         ], JsonResponse::HTTP_CREATED);
     }
