@@ -183,7 +183,7 @@ final class AIController extends Controller
         $media = $aiJob
             ->addMediaFromBase64($base64)
             ->usingFileName($aiJob->id . '.png')
-            ->toMediaCollection('image');
+            ->toMediaCollection('images');
 
         $aiJob->setAttribute('status', AIJob::STATUS_DONE);
         $aiJob->save();
