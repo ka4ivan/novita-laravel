@@ -20,6 +20,7 @@ Route::group(['middleware' => [\App\Http\Middleware\SetClientDomain::class]], fu
         Route::group(['middleware' => 'auth:sanctum'], function () {
             Route::post('txt2img', [\App\Http\Client\Controllers\AIController::class, 'txt2img']);
             Route::post('img2img', [\App\Http\Client\Controllers\AIController::class, 'img2img']);
+            Route::post('remove-background', [\App\Http\Client\Controllers\AIController::class, 'removeBackground']);
 
             // MY AI
             Route::get('my/models', [\App\Http\Client\Controllers\My\AIModelController::class, 'index']);

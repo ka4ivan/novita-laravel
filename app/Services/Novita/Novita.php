@@ -178,10 +178,27 @@ class Novita
             ->get('/training/subject', [
                 'task_id' => $taskId,
             ]);
-        \Llog::info($response->body());
 
         $this->validateResponse($response);
 
         return $response->json();
+    }
+
+    /**
+     * @param string $image
+     * @return string
+     * @throws ConnectionException
+     * @throws NovitaException
+     */
+    public function removeBackground(string $image): string
+    {
+        $response = $this->client()
+            ->post('/v3/remove-background', [
+                'image_file' => $image,
+            ]);
+
+        $this->validateResponse($response);
+
+        return $response->json('image_file');
     }
 }

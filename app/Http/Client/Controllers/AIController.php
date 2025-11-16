@@ -4,12 +4,13 @@ namespace App\Http\Client\Controllers;
 
 use App\Actions\Users\UserOrGuestAction;
 use App\Http\Client\Requests\AIImg2ImgRequest;
+use App\Http\Client\Requests\AIRemoveBackgroundRequest;
 use App\Http\Client\Requests\AITxt2ImgRequest;
+use App\Http\Client\Resources\MediaShowResource;
 use App\Models\AIJob;
 use App\Models\AIModel;
 use App\Services\Novita\Novita;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Storage;
 
 final class AIController extends Controller
 {
@@ -117,7 +118,7 @@ final class AIController extends Controller
 
         /** @var AIJob $aiJob */
         $aiJob = $user->aijobs()->create([
-            'type' => AIJob::TYPE_TXT2IMG,
+            'type' => AIJob::TYPE_IMG2IMG,
         ]);
 
         $webhookUrl = route('webhooks.ai.handle', [
@@ -135,4 +136,57 @@ final class AIController extends Controller
             'ai_job_id' => $aiJob->id,
         ], JsonResponse::HTTP_CREATED);
     }
-}
+
+    /**
+     * @api {post} /api/ai/img2img 01. Remove Background
+     * @apiVersion 1.0.0
+     * @apiName AIRemoveBackground
+     * @apiGroup AI
+     *
+     * @apiParam {String} image_file BASE64 зображення
+     *
+     * @apiSuccessExample {json} Response-Example: HTTP/1.1 200 OK
+     *  {
+     *      "data": {
+     *          "id": "019a8e84-4be6-7090-8315-6a409b994523",
+     *          "name": "media-libraryNrqSty",
+     *          "url": "http:\/\/novita.test\/storage\/019a8e84-4be6-7090-8315-6a409b994523\/019a8e84-4bd3-7246-a753-687e7104085b.png",
+     *          "conversions": {
+     *              "thumb": {
+     *                  "url": "http:\/\/novita.test\/storage\/019a8e84-4be6-7090-8315-6a409b994523\/conversions\/019a8e84-4bd3-7246-a753-687e7104085b-thumb.webp"
+     *              }
+     *          },
+     *          "states": {
+     *              "is_favorite": false
+     *          }
+     *      }
+     *  }
+     */
+    public function removeBackground(AIRemoveBackgroundRequest $request, Novita $novita)
+    {
+        $user = UserOrGuestAction::run($request->user(), $request->header('sguest'));
+
+        $base64 = $novita->removeBackground($request->input('image_file'));
+
+        /** @var AIJob $aiJob */
+        $aiJob = $user->aijobs()->create([
+            'type' => AIJob::TYPE_REMOVE_BACKGROUND,
+        ]);
+
+        $media = $this->mediaFromBase64($aiJob, $base64);
+
+        return MediaShowResource::make($media);
+    }
+
+    private function mediaFromBase64(AIJob $aiJob, string $base64)
+    {
+        $media = $aiJob
+            ->addMediaFromBase64($base64)
+            ->usingFileName($aiJob->id . '.png')
+            ->toMediaCollection('image');
+
+        $aiJob->setAttribute('status', AIJob::STATUS_DONE);
+        $aiJob->save();
+
+        return $media;
+    }}

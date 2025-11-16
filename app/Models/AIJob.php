@@ -20,6 +20,7 @@ class AIJob extends Model implements HasMedia
 
     const TYPE_TXT2IMG = 'txt2img';
     const TYPE_IMG2IMG = 'img2img';
+    const TYPE_REMOVE_BACKGROUND = 'remove_background';
 
     protected $table = 'ai_jobs';
 
