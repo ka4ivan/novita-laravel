@@ -91,7 +91,7 @@ final class AIController extends Controller
     /**
      * @api {post} /api/ai/img2img 02. IMG2IMG
      * @apiVersion 1.0.0
-     * @apiName AITxt2Img
+     * @apiName AIImg2Img
      * @apiGroup AI
      *
      * @apiParam {String{1-255}} model_name Назва моделі для генерації
@@ -222,12 +222,12 @@ final class AIController extends Controller
     }
 
     /**
-     * @api {post} /api/ai/upscale 04. Upscale
+     * @api {post} /api/ai/upscale 05. Upscale
      * @apiVersion 1.0.0
      * @apiName AIUpscale
      * @apiGroup AI
      *
-     * @apiParam {String} model_name Назва моделі
+     * @apiParam {String=RealESRGAN_x4plus_anime_6B,RealESRNet_x4plus,4x-UltraSharp} model_name Назва моделі
      * @apiParam {String} image_base64 BASE64 зображення
      * @apiParam {Integer=1-4} scale_factor Рівень покращення
      *
