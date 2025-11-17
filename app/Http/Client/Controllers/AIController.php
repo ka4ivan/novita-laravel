@@ -7,6 +7,7 @@ use App\Http\Client\Requests\AIImg2ImgRequest;
 use App\Http\Client\Requests\AIRemoveBackgroundRequest;
 use App\Http\Client\Requests\AIRemoveTextRequest;
 use App\Http\Client\Requests\AITxt2ImgRequest;
+use App\Http\Client\Requests\AIUpscaleRequest;
 use App\Http\Client\Resources\MediaShowResource;
 use App\Models\AIJob;
 use App\Models\AIModel;
@@ -212,12 +213,52 @@ final class AIController extends Controller
 
         /** @var AIJob $aiJob */
         $aiJob = $user->aijobs()->create([
-            'type' => AIJob::TYPE_REMOVE_BACKGROUND,
+            'type' => AIJob::TYPE_REMOVE_TEXT,
         ]);
 
         $media = $this->mediaFromBase64($aiJob, $base64);
 
         return MediaShowResource::make($media);
+    }
+
+    /**
+     * @api {post} /api/ai/upscale 04. Upscale
+     * @apiVersion 1.0.0
+     * @apiName AIUpscale
+     * @apiGroup AI
+     *
+     * @apiParam {String} model_name Назва моделі
+     * @apiParam {String} image_base64 BASE64 зображення
+     * @apiParam {Integer=1-4} scale_factor Рівень покращення
+     *
+     * @apiSuccessExample {json} Response-Example: HTTP/1.1 200 OK
+     *  {
+     *      "task_id": "f10333f2-2dd7-4f56-a177-e3c02a774d9a"
+     *  }
+     */
+    public function upscale(AIUpscaleRequest $request, Novita $novita)
+    {
+        $user = UserOrGuestAction::run($request->user(), $request->header('sguest'));
+
+        /** @var AIJob $aiJob */
+        $aiJob = $user->aijobs()->create([
+            'type' => AIJob::TYPE_UPSCALE,
+        ]);
+
+        $webhookUrl = route('webhooks.ai.handle', [
+            'novita',
+            'aiJobId' => $aiJob->id,
+        ]);
+
+        $taskId = $novita->upscale(
+            $request->getData(),
+            $webhookUrl
+        );
+
+        return response()->json([
+            'task_id' => $taskId,
+            'ai_job_id' => $aiJob->id,
+        ], JsonResponse::HTTP_CREATED);
     }
 
     private function mediaFromBase64(AIJob $aiJob, string $base64)

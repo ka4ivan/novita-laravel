@@ -219,4 +219,29 @@ class Novita
 
         return $response->json('image_file');
     }
+
+    /**
+     * @param array $request
+     * @param string|null $webhookUrl
+     * @return string
+     * @throws ConnectionException
+     * @throws NovitaException
+     */
+    public function upscale(array $request, ?string $webhookUrl = null): string
+    {
+        $data = [
+            'request' => $request,
+        ];
+
+        if ($webhookUrl !== null) {
+            $data['extra']['webhook']['url'] = $webhookUrl;
+        }
+
+        $response = $this->client()
+            ->post('/v3/async/upscale', $data);
+
+        $this->validateResponse($response);
+
+        return $response->json('task_id');
+    }
 }

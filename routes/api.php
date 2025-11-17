@@ -22,6 +22,7 @@ Route::group(['middleware' => [\App\Http\Middleware\SetClientDomain::class]], fu
             Route::post('img2img', [\App\Http\Client\Controllers\AIController::class, 'img2img']);
             Route::post('remove-background', [\App\Http\Client\Controllers\AIController::class, 'removeBackground']);
             Route::post('remove-text', [\App\Http\Client\Controllers\AIController::class, 'removeText']);
+            Route::post('upscale', [\App\Http\Client\Controllers\AIController::class, 'upscale']);
 
             // MY AI
             Route::get('my/models', [\App\Http\Client\Controllers\My\AIModelController::class, 'index']);
