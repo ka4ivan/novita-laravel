@@ -201,4 +201,22 @@ class Novita
 
         return $response->json('image_file');
     }
+
+    /**
+     * @param string $image
+     * @return string
+     * @throws ConnectionException
+     * @throws NovitaException
+     */
+    public function removeText(string $image): string
+    {
+        $response = $this->client()
+            ->post('/v3/remove-text', [
+                'image_file' => $image,
+            ]);
+
+        $this->validateResponse($response);
+
+        return $response->json('image_file');
+    }
 }

@@ -5,6 +5,7 @@ namespace App\Http\Client\Controllers;
 use App\Actions\Users\UserOrGuestAction;
 use App\Http\Client\Requests\AIImg2ImgRequest;
 use App\Http\Client\Requests\AIRemoveBackgroundRequest;
+use App\Http\Client\Requests\AIRemoveTextRequest;
 use App\Http\Client\Requests\AITxt2ImgRequest;
 use App\Http\Client\Resources\MediaShowResource;
 use App\Models\AIJob;
@@ -87,7 +88,7 @@ final class AIController extends Controller
     }
 
     /**
-     * @api {post} /api/ai/img2img 01. IMG2IMG
+     * @api {post} /api/ai/img2img 02. IMG2IMG
      * @apiVersion 1.0.0
      * @apiName AITxt2Img
      * @apiGroup AI
@@ -138,7 +139,7 @@ final class AIController extends Controller
     }
 
     /**
-     * @api {post} /api/ai/img2img 01. Remove Background
+     * @api {post} /api/ai/remove-background 03. Remove Background
      * @apiVersion 1.0.0
      * @apiName AIRemoveBackground
      * @apiGroup AI
@@ -167,6 +168,47 @@ final class AIController extends Controller
         $user = UserOrGuestAction::run($request->user(), $request->header('sguest'));
 
         $base64 = $novita->removeBackground($request->input('image_file'));
+
+        /** @var AIJob $aiJob */
+        $aiJob = $user->aijobs()->create([
+            'type' => AIJob::TYPE_REMOVE_BACKGROUND,
+        ]);
+
+        $media = $this->mediaFromBase64($aiJob, $base64);
+
+        return MediaShowResource::make($media);
+    }
+
+    /**
+     * @api {post} /api/ai/remove-text 04. Remove Text
+     * @apiVersion 1.0.0
+     * @apiName AIRemoveText
+     * @apiGroup AI
+     *
+     * @apiParam {String} image_file BASE64 зображення
+     *
+     * @apiSuccessExample {json} Response-Example: HTTP/1.1 200 OK
+     *  {
+     *      "data": {
+     *          "id": "019a8e84-4be6-7090-8315-6a409b994523",
+     *          "name": "media-libraryNrqSty",
+     *          "url": "http:\/\/novita.test\/storage\/019a8e84-4be6-7090-8315-6a409b994523\/019a8e84-4bd3-7246-a753-687e7104085b.png",
+     *          "conversions": {
+     *              "thumb": {
+     *                  "url": "http:\/\/novita.test\/storage\/019a8e84-4be6-7090-8315-6a409b994523\/conversions\/019a8e84-4bd3-7246-a753-687e7104085b-thumb.webp"
+     *              }
+     *          },
+     *          "states": {
+     *              "is_favorite": false
+     *          }
+     *      }
+     *  }
+     */
+    public function removeText(AIRemoveTextRequest $request, Novita $novita)
+    {
+        $user = UserOrGuestAction::run($request->user(), $request->header('sguest'));
+
+        $base64 = $novita->removeText($request->input('image_file'));
 
         /** @var AIJob $aiJob */
         $aiJob = $user->aijobs()->create([
