@@ -23,4 +23,9 @@ final class AIUpscaleRequest extends FormRequest
             'scale_factor' => ['required', 'integer', 'min:1', 'max:4',],
         ];
     }
+
+    public function getData()
+    {
+        return $this->only('model_name', 'image_base64', 'scale_factor');
+    }
 }
