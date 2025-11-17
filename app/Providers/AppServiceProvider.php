@@ -2,10 +2,12 @@
 
 namespace App\Providers;
 
+use App\Models\AIModel;
 use App\Services\Novita\Novita;
 use App\Support\Favorites\Favorite;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Foundation\AliasLoader;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 
@@ -37,6 +39,8 @@ class AppServiceProvider extends ServiceProvider
             URL::forceScheme(env('NGROK_SCHEME') ?: 'https');
             URL::forceRootUrl($url);
         }
+
+        Route::model('aiModel', AIModel::class);
 
         $this->setMorphMap();
     }

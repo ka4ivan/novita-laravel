@@ -27,6 +27,7 @@ Route::group(['middleware' => [\App\Http\Middleware\SetClientDomain::class]], fu
             // MY AI
             Route::get('my/models', [\App\Http\Client\Controllers\My\AIModelController::class, 'index']);
             Route::post('my/models', [\App\Http\Client\Controllers\My\AIModelController::class, 'store']);
+            Route::delete('my/models/{aiModel}', [\App\Http\Client\Controllers\My\AIModelController::class, 'delete']);
         });
     });
 

@@ -190,6 +190,35 @@ final class AIModelController extends Controller
         ]);
     }
 
+    /**
+     *  @api {delete} /api/ai/my/models/{aimodel:id} 03. Видалити власну модель
+     *  @apiVersion 1.0.0
+     *  @apiName AIModelMyModelsDelete
+     *  @apiGroup AIModelMy
+     *
+     *  @apiHeader {String} Authorization Bearer токен: `Bearer {token}`
+     *
+     *  @apiSuccessExample {json} Response-Success: HTTP/1.1 200 OK
+     *  {
+     *      "message": "Дані успішно видалено!"
+     *  }
+     */
+    public function delete(Request $request, AIModel $aiModel)
+    {
+        /** @var User $user */
+        $user = $request->user();
+
+        if ($aiModel->user_id !== $user->id) {
+            return response()->json([
+                'message' => trans('Forbidden'),
+            ], 403);
+        }
+
+        $aiModel->delete();
+
+        return response()->json(['message' => trans('alerts.destroy.success')]);
+    }
+
     protected function trainingData($request, AIModel $aiModel, Novita $novita): void
     {
         /** @var User $user */
