@@ -8,7 +8,7 @@
     <b>Email:</b> {{ $email }}
 </div>
 <div>
-    <b>User ID:</b> {{ $user->user_id }}
+    <b>User ID:</b> {{ $user->id }}
 </div>
 <div>
     <b>Registration date:</b> {{ $user->created_at->format('d.m.Y H:i:s') }}
