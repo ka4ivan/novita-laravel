@@ -115,25 +115,36 @@ class Novita
 
     /**
      * @param array $request
-     * @param string|null $webhookUrl
      * @return string
      * @throws ConnectionException
      * @throws NovitaException
      */
-    public function qwenImageEdit(array $request, ?string $webhookUrl = null): string
+    public function qwenImageEdit(array $request): string
     {
-        $data = $request;
-
-        if ($webhookUrl !== null) {
-            $data['extra']['webhook']['url'] = $webhookUrl;
-        }
-
         $response = $this->client()
-            ->post('/v3/async/qwen-image-edit', $data);
+            ->post('/v3/async/qwen-image-edit', $request);
 
         $this->validateResponse($response);
 
         return $response->json('task_id');
+    }
+
+
+    /**
+     * @param array $request
+     * @return array
+     * @throws ConnectionException
+     * @throws NovitaException
+     */
+    public function gemini3ProImageEdit(array $request): array
+    {
+        $response = $this->client()
+            ->post('v3/gemini-3-pro-image-edit', $request);
+
+        \Llog::info($response->json());
+        $this->validateResponse($response);
+
+        return $response->json();
     }
 
     /**

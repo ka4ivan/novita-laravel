@@ -3,7 +3,9 @@
 namespace App\Http\Client\Controllers;
 
 use App\Actions\Ai\NovitaAIJobRefreshResult;
+use App\Actions\Ai\NovitaAIGeminiHandleResult;
 use App\Actions\Users\UserOrGuestAction;
+use App\Events\AITaskSucceed;
 use App\Http\Client\Requests\AIImg2ImgRequest;
 use App\Http\Client\Requests\AIRemoveBackgroundRequest;
 use App\Http\Client\Requests\AIRemoveTextRequest;
@@ -13,7 +15,9 @@ use App\Http\Client\Resources\MediaShowResource;
 use App\Models\AIJob;
 use App\Models\AIModel;
 use App\Services\Novita\Novita;
+use App\Services\Novita\NovitaDownloader;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Str;
 
 final class AIController extends Controller
 {
@@ -122,30 +126,39 @@ final class AIController extends Controller
             'novita',
             'aiJobId' => $aiJob->id,
         ]);
-\Llog::info(1, [$request->input('model_main')]);
-        if ($request->input('model_main') === 'qween_image_edit') {
-            \Llog::info(2);
+
+        $modelMain = $request->input('model_main');
+
+        if ($modelMain === 'qween_image_edit') {
             $taskId = $novita->qwenImageEdit(
                 array_merge($request->getData(), [
                     'image' => $request->image_base64,
                 ]),
             );
-            \Llog::info(3);
 
             $aiJob->update([
                 'task_id' => $taskId,
             ]);
 
             NovitaAIJobRefreshResult::dispatch($aiJob);
-            \Llog::info(4);
 
-        } else {
+        } elseif ($modelMain === 'gemini_3_pro_image_edit') { // TODO Зберегти результат
+            $taskId = Str::uuid();
+
+            $aiJob->update([
+                'task_id' => $taskId,
+            ]);
+
+            NovitaAIGeminiHandleResult::dispatch($aiJob, [
+                'image_base64s' => [$request->image_base64],
+                'prompt' => $request->input('prompt'),
+            ]);
+        } else { // TODO Зберегти результат
             $taskId = $novita->img2img(
                 $request->getData(),
                 $webhookUrl
             );
         }
-        \Llog::info(5);
 
         return response()->json([
             'task_id' => $taskId,
