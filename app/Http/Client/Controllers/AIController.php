@@ -2,6 +2,7 @@
 
 namespace App\Http\Client\Controllers;
 
+use App\Actions\Ai\NovitaAIJobRefreshResult;
 use App\Actions\Users\UserOrGuestAction;
 use App\Http\Client\Requests\AIImg2ImgRequest;
 use App\Http\Client\Requests\AIRemoveBackgroundRequest;
@@ -121,11 +122,30 @@ final class AIController extends Controller
             'novita',
             'aiJobId' => $aiJob->id,
         ]);
+\Llog::info(1, [$request->input('model_main')]);
+        if ($request->input('model_main') === 'qween_image_edit') {
+            \Llog::info(2);
+            $taskId = $novita->qwenImageEdit(
+                array_merge($request->getData(), [
+                    'image' => $request->image_base64,
+                ]),
+            );
+            \Llog::info(3);
 
-        $taskId = $novita->img2img(
-            $request->getData(),
-            $webhookUrl
-        );
+            $aiJob->update([
+                'task_id' => $taskId,
+            ]);
+
+            NovitaAIJobRefreshResult::dispatch($aiJob);
+            \Llog::info(4);
+
+        } else {
+            $taskId = $novita->img2img(
+                $request->getData(),
+                $webhookUrl
+            );
+        }
+        \Llog::info(5);
 
         return response()->json([
             'task_id' => $taskId,

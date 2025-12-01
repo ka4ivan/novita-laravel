@@ -114,6 +114,29 @@ class Novita
     }
 
     /**
+     * @param array $request
+     * @param string|null $webhookUrl
+     * @return string
+     * @throws ConnectionException
+     * @throws NovitaException
+     */
+    public function qwenImageEdit(array $request, ?string $webhookUrl = null): string
+    {
+        $data = $request;
+
+        if ($webhookUrl !== null) {
+            $data['extra']['webhook']['url'] = $webhookUrl;
+        }
+
+        $response = $this->client()
+            ->post('/v3/async/qwen-image-edit', $data);
+
+        $this->validateResponse($response);
+
+        return $response->json('task_id');
+    }
+
+    /**
      * @param string $extension
      * @return array
      * @throws ConnectionException
@@ -179,6 +202,24 @@ class Novita
                 'task_id' => $taskId,
             ]);
 
+        $this->validateResponse($response);
+
+        return $response->json();
+    }
+
+    /**
+     * @param string $taskId
+     * @return array
+     * @throws ConnectionException
+     * @throws NovitaException
+     */
+    public function taskResult(string $taskId): array
+    {
+        $response = $this->client()
+            ->get('/v3/async/task-result', [
+                'task_id' => $taskId,
+            ]);
+        \Llog::info($response->body());
         $this->validateResponse($response);
 
         return $response->json();
