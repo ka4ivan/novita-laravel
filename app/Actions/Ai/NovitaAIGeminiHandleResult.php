@@ -2,6 +2,7 @@
 
 namespace App\Actions\Ai;
 
+use App\Events\AITaskFailed;
 use App\Events\AITaskSucceed;
 use App\Models\AIJob;
 use App\Services\Novita\Novita;
@@ -38,5 +39,6 @@ class NovitaAIGeminiHandleResult
     public function failed(?\Throwable $exception): void
     {
         $this->AIJob->update(['status' => AIJob::STATUS_FAILED]);
+        event(new AITaskFailed($this->AIJob->id, $this->AIJob->task_id));
     }
 }
