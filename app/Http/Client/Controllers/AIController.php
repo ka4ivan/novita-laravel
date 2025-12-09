@@ -153,6 +153,7 @@ final class AIController extends Controller
                 'image_base64s' => [$request->image_base64],
                 'prompt' => $request->input('prompt'),
             ]);
+
         } else { // TODO Зберегти результат
             $taskId = $novita->img2img(
                 $request->getData(),

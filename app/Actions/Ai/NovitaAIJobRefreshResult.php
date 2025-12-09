@@ -14,18 +14,19 @@ class NovitaAIJobRefreshResult
 {
     use AsAction, AsJob, InteractsWithQueue, SerializesModels;
 
-    public const INTERVAL = 10;
-    public int $tries = 90;
+    public int $tries = 20;
+    public int $backoff = 10;
 
-    public function handle(AIJob $AIJob): void
+    public function handle(AIJob $AIJob)
     {
-        $taskResult = (new Novita(config('services.novita.key')))->taskResult($AIJob->task_id);
+        $taskResult = (new Novita(config('services.novita.key')))
+            ->taskResult($AIJob->task_id);
 
         /** @var OperationResult $res */
-        $res = NovitaAIJobHandleResult::run($taskResult, $AIJob);
+        $res = NovitaAIJobHandleResult::make()->run($taskResult, $AIJob);
 
         if (!$res->isSuccess()) {
-            $this->release(self::INTERVAL);
+            self::dispatch($AIJob)->delay(now()->addSeconds($this->backoff));
             return;
         }
     }
