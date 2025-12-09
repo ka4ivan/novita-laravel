@@ -154,7 +154,7 @@ final class AIController extends Controller
                 'prompt' => $request->input('prompt'),
             ]);
 
-        } else { // TODO Зберегти результат
+        } else {
             $taskId = $novita->img2img(
                 $request->getData(),
                 $webhookUrl

@@ -20,6 +20,7 @@ class Novita
     {
         return Http::baseUrl(self::API_BASE)
             ->withToken($this->key)
+            ->timeout(300)
             ->asJson();
     }
 

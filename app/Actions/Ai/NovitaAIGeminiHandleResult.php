@@ -16,29 +16,27 @@ class NovitaAIGeminiHandleResult
 {
     use AsAction, AsJob, InteractsWithQueue, SerializesModels;
 
-    public function __construct(public AIJob $AIJob) {}
-
-    public function handle(array $data): void
+    public function handle(AIJob $AIJob, array $data): void
     {
-        \Llog::info($data);
         $task = (new Novita(config('services.novita.key')))
             ->gemini3ProImageEdit($data);
 
         foreach ($task['image_urls'] ?? [] as $imageUrl) {
             config()->set('media-library.media_downloader', NovitaDownloader::class);
-            $this->AIJob->addMediaFromUrl($imageUrl)->toMediaCollection('images');
+            $AIJob->addMediaFromUrl($imageUrl)->toMediaCollection('images');
         }
 
-        event(new AITaskSucceed($this->AIJob->id, $this->AIJob->task_id));
+        event(new AITaskSucceed($AIJob->id, $AIJob->task_id));
 
-        $this->AIJob->update([
+        $AIJob->update([
             'status' => AIJob::STATUS_DONE,
         ]);
     }
 
-    public function failed(?\Throwable $exception): void
+    public function failed(AIJob $AIJob, ?\Throwable $exception = null): void
     {
-        $this->AIJob->update(['status' => AIJob::STATUS_FAILED]);
-        event(new AITaskFailed($this->AIJob->id, $this->AIJob->task_id));
+        $AIJob->update(['status' => AIJob::STATUS_FAILED]);
+
+        event(new AITaskFailed($AIJob->id, $AIJob->task_id));
     }
 }
