@@ -11,7 +11,6 @@ final class AITxt2ImgRequest extends FormRequest
     public function rules()
     {
         return [
-            'socket_id' => ['required', 'uuid'],
             'model_name' => ['required', 'string', 'max:255'],
             'prompt' => ['required', 'string', 'between:1,1024'],
             'negative_prompt' => ['string', 'between:1,1024'],
@@ -37,7 +36,6 @@ final class AITxt2ImgRequest extends FormRequest
             'model_name',
             'prompt',
             'negative_prompt',
-            'loras',
             'width',
             'height',
             'image_num',

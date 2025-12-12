@@ -23,6 +23,7 @@ final class MediaShowResource extends JsonResource
             'url' => $fullUrl,
             'alt' => $this->when(!is_null($this->alt), fn() => $this->alt),
             'conversions' => $this->when(boolval($a = $this->getConversions()) , fn() => $a),
+            'states' => $this->getClientStates(),
         ];
     }
 

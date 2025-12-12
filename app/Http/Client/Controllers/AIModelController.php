@@ -8,7 +8,7 @@ use App\Services\Novita\Novita;
 final class AIModelController extends Controller
 {
     /**
-     * @api {post} /api/ai/models 01. Список моделей
+     * @api {get} /api/ai/models 01. Список моделей
      * @apiVersion 1.0.0
      * @apiName AIModelModels
      * @apiGroup AIModel

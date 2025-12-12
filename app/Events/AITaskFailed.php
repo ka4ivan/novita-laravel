@@ -19,7 +19,7 @@ class AITaskFailed implements ShouldBroadcastNow
      * Create a new event instance.
      */
     public function __construct(
-        public string $socketId,
+        public string $aiJobId,
         public string $taskId
     )
     {}
@@ -32,7 +32,7 @@ class AITaskFailed implements ShouldBroadcastNow
     public function broadcastOn(): array
     {
         return [
-            new Channel('ai.' . $this->socketId),
+            new Channel('ai.' . $this->aiJobId),
         ];
     }
 

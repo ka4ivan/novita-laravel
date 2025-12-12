@@ -115,4 +115,7 @@ return [
         'name' => env('MAIL_FROM_NAME', 'Example'),
     ],
 
+    'ai-model-created' => [
+        'subject' => env('MAIL_AI_MODEL_CREATED_SUBJECT', 'Your AI model is ready to go!'),
+    ],
 ];

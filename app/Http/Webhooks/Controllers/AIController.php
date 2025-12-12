@@ -2,10 +2,8 @@
 
 namespace App\Http\Webhooks\Controllers;
 
-use App\Events\AITaskFailed;
-use App\Events\AITaskSucceed;
+use App\Actions\Ai\NovitaHandleWebhook;
 use App\Http\Client\Controllers\Controller;
-use App\Models\AIJob;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Ka4ivan\LaravelLogger\Facades\Llog;
@@ -27,55 +25,7 @@ final class AIController extends Controller
 
     private function handleNovita(Request $request, string $aiJobId)
     {
-        $aiJob = AIJob::find($aiJobId);
-        $eventType = $request->input('event_type');
-
-        if ($eventType !== 'ASYNC_TASK_RESULT') {
-            Llog::warning('Novita: unknown event type', [$eventType]);
-
-            $aiJob->update([
-                'status' => AIJob::STATUS_FAILED,
-            ]);
-
-            return response()->json(null, JsonResponse::HTTP_NO_CONTENT);
-        }
-
-        $payload = $request->input('payload');
-
-        $task = $payload['task'];
-
-        if (!in_array($task['task_type'], ['TXT_TO_IMG', 'IMG_TO_IMG', 'UPSCALE'])) {
-            Llog::warning('Novita: unknown task type', [$task]);
-
-            $aiJob->update([
-                'status' => AIJob::STATUS_FAILED,
-            ]);
-
-            return response()->json(null, JsonResponse::HTTP_NO_CONTENT);
-        }
-
-        if ($task['status'] !== 'TASK_STATUS_SUCCEED') {
-            broadcast(new AITaskFailed($aiJobId, $task['task_id']));
-
-            Llog::warning('Novita: task not succeeded', [$task]);
-
-            $aiJob->update([
-                'status' => AIJob::STATUS_FAILED,
-            ]);
-
-            return response()->json(null, JsonResponse::HTTP_NO_CONTENT);
-        }
-
-        foreach ($payload['images'] as $image) { // TODO
-            // TODO скачати (підставити ключі)
-//            $aiJob->addMediaFromUrl($image['image_url'])->toMediaCollection('image');
-        }
-
-//        broadcast(new AITaskSucceed($aiJobId, $task['task_id'], $media));
-
-        $aiJob->update([
-            'status' => AIJob::STATUS_DONE,
-        ]);
+        NovitaHandleWebhook::dispatch($request->all(), $aiJobId);
 
         return response()->json(null, JsonResponse::HTTP_NO_CONTENT);
     }
