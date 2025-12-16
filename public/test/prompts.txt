@@ -3,6 +3,12 @@ TXT2IMG
 Oppressive atmosphere | Гнітюча атмосфера
 A haunting, atmospheric photograph of an abandoned urban street at dusk, shrouded in heavy fog. Dim, flickering streetlights cast long shadows over cracked pavement. Faded graffiti, broken windows, and rusted metal details enhance the sense of decay. The color palette is cold and desaturated — deep blues, grays, and muted browns. The air feels heavy and still, evoking loneliness and quiet despair. Cinematic composition, high detail, dramatic contrast, moody lighting
 
+Nature | Природа
+An otherworldly landscape bathed in the light of a twin sunset, with towering crystal mountains reflecting the vibrant colors of the sky. A vast, glowing river of liquid silver winds through an ancient forest of bioluminescent trees, while floating islands hover in the distance, their waterfalls cascading into the mist. The scene is ethereal, serene, yet full of mysterious energy, as stars begin to twinkle in the dusky sky above
+
+Woman | Жінка
+A graceful woman with flowing golden hair stands on the edge of a cliff, overlooking an endless sea under a soft, pastel sunset. She wears an elegant, silver gown that catches the breeze, shimmering like stardust. Her eyes are captivating, filled with wisdom and serenity. Around her, delicate butterflies hover in the warm glow of the setting sun, while the sky above transitions into a deep violet, scattered with twinkling stars. The scene is peaceful, enchanting, and full of a quiet, magical energy
+
 TXT2IMG Lora
 
 Logo in a New Year style | Логотип у новорічному стилі

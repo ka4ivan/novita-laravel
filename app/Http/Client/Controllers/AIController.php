@@ -86,10 +86,24 @@ final class AIController extends Controller
                 'prompt' => $request->input('prompt'),
             ]);
         } else {
-            $taskId = $novita->txt2img(
-                $request->getData(),
-                $webhookUrl
-            );
+            $modelMain = $request->input('model_main');
+
+            if ($modelMain === 'gemini_3_pro_image_text_to_image') {
+                $taskId = Str::uuid();
+
+                $aiJob->update([
+                    'task_id' => $taskId,
+                ]);
+
+                NovitaAIGeminiHandleResult::dispatch($aiJob, [
+                    'prompt' => $request->input('prompt'),
+                ]);
+            } else {
+                $taskId = $novita->txt2img(
+                    $request->getData(),
+                    $webhookUrl
+                );
+            }
         }
 
         return response()->json([
