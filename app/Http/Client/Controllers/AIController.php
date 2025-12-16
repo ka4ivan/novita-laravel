@@ -68,12 +68,23 @@ final class AIController extends Controller
             $aiTrainingData = $aiModel->data->first();
             $media = $aiTrainingData->getFirstMedia('image');
 
-            $taskId = $novita->img2img(
-                array_merge($request->getData(), [
-                    'image_base64' => $media->toBase64(),
-                ]),
-                $webhookUrl
-            );
+//            $taskId = $novita->img2img(
+//                array_merge($request->getData(), [
+//                    'image_base64' => $media->toBase64(),
+//                ]),
+//                $webhookUrl
+//            );
+
+            $taskId = Str::uuid();
+
+            $aiJob->update([
+                'task_id' => $taskId,
+            ]);
+
+            NovitaAIGeminiHandleResult::dispatch($aiJob, [
+                'image_base64s' => [$media->toBase64()],
+                'prompt' => $request->input('prompt'),
+            ]);
         } else {
             $taskId = $novita->txt2img(
                 $request->getData(),
@@ -142,7 +153,7 @@ final class AIController extends Controller
 
             NovitaAIJobRefreshResult::dispatch($aiJob);
 
-        } elseif ($modelMain === 'gemini_3_pro_image_edit') { // TODO Зберегти результат
+        } elseif ($modelMain === 'gemini_3_pro_image_edit') {
             $taskId = Str::uuid();
 
             $aiJob->update([

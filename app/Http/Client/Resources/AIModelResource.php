@@ -18,6 +18,7 @@ final class AIModelResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'base_name' => $this->base_name,
+            'progress' => $this->progress,
             'data' => $this->whenLoaded('data', fn () => AIDataResource::collection($this->data)),
         ];
     }

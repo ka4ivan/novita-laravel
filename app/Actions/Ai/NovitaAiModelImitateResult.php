@@ -16,17 +16,18 @@ class NovitaAiModelImitateResult
     public function handle()
     {
         AIModel::query()
-            ->where('status', AIModel::STATUS_CREATED)
+            ->whereIn('status', [AIModel::STATUS_CREATED, AIModel::STATUS_TRAINING])
             ->where('progress', '<', 100)
             ->chunk(10, function (Collection $chunk) {
                 /** @var AIModel $aiModel */
                 foreach ($chunk as $aiModel) {
                     $aiModel->increment('progress');
-                    $aiModel->setAttribute('status', AIModel::STATUS_SUCCESS);
+                    $aiModel->setAttribute('status', AIModel::STATUS_TRAINING);
                     $aiModel->save();
 
-                    if ($aiModel->progress === 100) {
-                        Llog::info($aiModel);
+                    if ($aiModel->progress >= 100) {
+                        $aiModel->setAttribute('status', AIModel::STATUS_SUCCESS);
+                        $aiModel->save();
 
                         $user = $aiModel->user;
 
