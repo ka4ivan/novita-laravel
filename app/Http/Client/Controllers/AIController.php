@@ -5,6 +5,7 @@ namespace App\Http\Client\Controllers;
 use App\Actions\Ai\NovitaAIJobRefreshResult;
 use App\Actions\Ai\NovitaAIGeminiHandleResult;
 use App\Http\Client\Requests\AIImg2ImgGeminiRequest;
+use App\Http\Client\Requests\AIImg2ImgQwenRequest;
 use App\Http\Client\Requests\AIImg2ImgRequest;
 use App\Http\Client\Requests\AIRemoveBackgroundRequest;
 use App\Http\Client\Requests\AIRemoveTextRequest;
@@ -152,27 +153,10 @@ final class AIController extends Controller
             'aiJobId' => $aiJob->id,
         ]);
 
-        $modelMain = $request->input('model_main');
-
-        if ($modelMain === 'qween_image_edit') {
-            $taskId = $novita->qwenImageEdit(
-                array_merge($request->getData(), [
-                    'image' => $request->image_base64,
-                ]),
-            );
-
-            $aiJob->update([
-                'task_id' => $taskId,
-            ]);
-
-            NovitaAIJobRefreshResult::dispatch($aiJob);
-
-        } else {
-            $taskId = $novita->img2img(
-                $request->getData(),
-                $webhookUrl
-            );
-        }
+        $taskId = $novita->img2img(
+            $request->getData(),
+            $webhookUrl
+        );
 
         return response()->json([
             'task_id' => $taskId,
@@ -183,7 +167,7 @@ final class AIController extends Controller
     /**
      * @api {post} /api/ai/img2img/gemini 04. IMG2IMG Gemini
      * @apiVersion 1.0.0
-     * @apiName AIImg2Img
+     * @apiName AIImg2ImgGemini
      * @apiGroup AI
      *
      * @apiParam {Array} image_base64s Масив де кожен елемент BASE64 зображення
@@ -228,8 +212,50 @@ final class AIController extends Controller
         ], JsonResponse::HTTP_CREATED);
     }
 
+
     /**
-     * @api {post} /api/ai/remove-background 05. Remove Background
+     * @api {post} /api/ai/img2img/gemini 05. IMG2IMG Qwen
+     * @apiVersion 1.0.0
+     * @apiName AIImg2ImgQwen
+     * @apiGroup AI
+     *
+     * @apiParam {Array} image Зображення
+     * @apiParam {String{1-1024}} prompt Текстовий запит для генерації
+     * @apiParam {Number=-1+} seed Початкове зерно генерації (-1 — випадкове)
+     * @apiParam {String="jpeg","png","webp"} output_format Формат фото
+     *
+     * @apiSuccessExample {json} Response-Example: HTTP/1.1 200 OK
+     *  {
+     *      "task_id": "f10333f2-2dd7-4f56-a177-e3c02a774d9a"
+     *  }
+     */
+    public function img2imgQwen(AIImg2ImgQwenRequest $request, Novita $novita)
+    {
+        $user = $request->user();
+
+        /** @var AIJob $aiJob */
+        $aiJob = $user->aijobs()->create([
+            'type' => AIJob::TYPE_IMG2IMG,
+        ]);
+
+        $taskId = $novita->qwenImageEdit(
+            array_merge($request->getData()),
+        );
+
+        $aiJob->update([
+            'task_id' => $taskId,
+        ]);
+
+        NovitaAIJobRefreshResult::dispatch($aiJob);
+
+        return response()->json([
+            'task_id' => $taskId,
+            'ai_job_id' => $aiJob->id,
+        ], JsonResponse::HTTP_CREATED);
+    }
+
+    /**
+     * @api {post} /api/ai/remove-background 06. Remove Background
      * @apiVersion 1.0.0
      * @apiName AIRemoveBackground
      * @apiGroup AI
@@ -270,7 +296,7 @@ final class AIController extends Controller
     }
 
     /**
-     * @api {post} /api/ai/remove-text 06. Remove Text
+     * @api {post} /api/ai/remove-text 07. Remove Text
      * @apiVersion 1.0.0
      * @apiName AIRemoveText
      * @apiGroup AI
@@ -311,7 +337,7 @@ final class AIController extends Controller
     }
 
     /**
-     * @api {post} /api/ai/upscale 07. Upscale
+     * @api {post} /api/ai/upscale 08. Upscale
      * @apiVersion 1.0.0
      * @apiName AIUpscale
      * @apiGroup AI
