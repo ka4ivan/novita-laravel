@@ -4,6 +4,7 @@ namespace App\Http\Client\Controllers;
 
 use App\Actions\Ai\NovitaAIJobRefreshResult;
 use App\Actions\Ai\NovitaAIGeminiHandleResult;
+use App\Http\Client\Requests\AIImg2ImgGeminiRequest;
 use App\Http\Client\Requests\AIImg2ImgRequest;
 use App\Http\Client\Requests\AIRemoveBackgroundRequest;
 use App\Http\Client\Requests\AIRemoveTextRequest;
@@ -14,6 +15,7 @@ use App\Http\Client\Resources\MediaShowResource;
 use App\Models\AIJob;
 use App\Services\Novita\Novita;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 final class AIController extends Controller
@@ -78,6 +80,7 @@ final class AIController extends Controller
      * @apiGroup AI
      *
      * @apiParam {String{1-1024}} prompt Текстовий запит для генерації
+     * @apiParam {String="1:1","3:2","2:3","3:4","4:3","4:5","5:4","9:16","16:9","21:9"} aspect_ratio Співвідношення сторін
      *
      * @apiSuccessExample {json} Response-Example: HTTP/1.1 200 OK
      *  {
@@ -164,18 +167,6 @@ final class AIController extends Controller
 
             NovitaAIJobRefreshResult::dispatch($aiJob);
 
-        } elseif ($modelMain === 'gemini_3_pro_image_edit') {
-            $taskId = Str::uuid();
-
-            $aiJob->update([
-                'task_id' => $taskId,
-            ]);
-
-            NovitaAIGeminiHandleResult::dispatch($aiJob, [
-                'image_base64s' => [$request->image_base64],
-                'prompt' => $request->input('prompt'),
-            ]);
-
         } else {
             $taskId = $novita->img2img(
                 $request->getData(),
@@ -190,7 +181,55 @@ final class AIController extends Controller
     }
 
     /**
-     * @api {post} /api/ai/remove-background 04. Remove Background
+     * @api {post} /api/ai/img2img/gemini 04. IMG2IMG Gemini
+     * @apiVersion 1.0.0
+     * @apiName AIImg2Img
+     * @apiGroup AI
+     *
+     * @apiParam {Array} image_base64s Масив де кожен елемент BASE64 зображення
+     * @apiParam {String{1-1024}} prompt Текстовий запит для генерації
+     * @apiParam {String="1:1","3:2","2:3","3:4","4:3","4:5","5:4","9:16","16:9","21:9"} aspect_ratio Співвідношення сторін
+     *
+     * @apiSuccessExample {json} Response-Example: HTTP/1.1 200 OK
+     *  {
+     *      "task_id": "f10333f2-2dd7-4f56-a177-e3c02a774d9a"
+     *  }
+     */
+    public function img2imgGemini(AIImg2ImgGeminiRequest $request)
+    {
+        $user = $request->user();
+
+        /** @var AIJob $aiJob */
+        $aiJob = $user->aijobs()->create([
+            'type' => AIJob::TYPE_IMG2IMG,
+        ]);
+
+        $taskId = Str::uuid();
+
+        $aiJob->update([
+            'task_id' => $taskId,
+        ]);
+
+        $imageUrls = collect($request->file('image_base64s', []))
+            ->map(function ($file) use ($aiJob) {
+                $path = $file->store("tmp/ai/{$aiJob->id}", 'public');
+
+                return Storage::disk('public')->url($path);
+            })
+            ->all();
+
+        NovitaAIGeminiHandleResult::dispatch($aiJob, array_merge($request->getData(), [
+            'image_urls' => $imageUrls,
+        ]));
+
+        return response()->json([
+            'task_id' => $taskId,
+            'ai_job_id' => $aiJob->id,
+        ], JsonResponse::HTTP_CREATED);
+    }
+
+    /**
+     * @api {post} /api/ai/remove-background 05. Remove Background
      * @apiVersion 1.0.0
      * @apiName AIRemoveBackground
      * @apiGroup AI
@@ -231,7 +270,7 @@ final class AIController extends Controller
     }
 
     /**
-     * @api {post} /api/ai/remove-text 05. Remove Text
+     * @api {post} /api/ai/remove-text 06. Remove Text
      * @apiVersion 1.0.0
      * @apiName AIRemoveText
      * @apiGroup AI
@@ -272,7 +311,7 @@ final class AIController extends Controller
     }
 
     /**
-     * @api {post} /api/ai/upscale 06. Upscale
+     * @api {post} /api/ai/upscale 07. Upscale
      * @apiVersion 1.0.0
      * @apiName AIUpscale
      * @apiGroup AI

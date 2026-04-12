@@ -21,6 +21,7 @@ Route::group(['middleware' => [\App\Http\Middleware\SetClientDomain::class]], fu
             Route::post('txt2img', [\App\Http\Client\Controllers\AIController::class, 'txt2img']);
             Route::post('txt2img/gemini', [\App\Http\Client\Controllers\AIController::class, 'txt2imgGemini']);
             Route::post('img2img', [\App\Http\Client\Controllers\AIController::class, 'img2img']);
+            Route::post('img2img/gemini', [\App\Http\Client\Controllers\AIController::class, 'img2imgGemini']);
             Route::post('remove-background', [\App\Http\Client\Controllers\AIController::class, 'removeBackground']);
             Route::post('remove-text', [\App\Http\Client\Controllers\AIController::class, 'removeText']);
             Route::post('upscale', [\App\Http\Client\Controllers\AIController::class, 'upscale']);
