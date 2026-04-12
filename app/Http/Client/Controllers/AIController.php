@@ -4,18 +4,15 @@ namespace App\Http\Client\Controllers;
 
 use App\Actions\Ai\NovitaAIJobRefreshResult;
 use App\Actions\Ai\NovitaAIGeminiHandleResult;
-use App\Actions\Users\UserOrGuestAction;
-use App\Events\AITaskSucceed;
 use App\Http\Client\Requests\AIImg2ImgRequest;
 use App\Http\Client\Requests\AIRemoveBackgroundRequest;
 use App\Http\Client\Requests\AIRemoveTextRequest;
+use App\Http\Client\Requests\AITxt2ImgGeminiRequest;
 use App\Http\Client\Requests\AITxt2ImgRequest;
 use App\Http\Client\Requests\AIUpscaleRequest;
 use App\Http\Client\Resources\MediaShowResource;
 use App\Models\AIJob;
-use App\Models\AIModel;
 use App\Services\Novita\Novita;
-use App\Services\Novita\NovitaDownloader;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Str;
 
@@ -51,7 +48,7 @@ final class AIController extends Controller
      */
     public function txt2img(AITxt2ImgRequest $request, Novita $novita)
     {
-        $user = UserOrGuestAction::run($request->user(), $request->header('sguest'));
+        $user = $request->user();
 
         /** @var AIJob $aiJob */
         $aiJob = $user->aijobs()->create([
@@ -63,48 +60,10 @@ final class AIController extends Controller
             'aiJobId' => $aiJob->id,
         ]);
 
-        if ($request->input('loras')) {
-            $aiModel = AIModel::query()->with('data.media')->where('name', $request->input('loras.0.model_name'))->firstOrFail();
-            $aiTrainingData = $aiModel->data->first();
-            $media = $aiTrainingData->getFirstMedia('image');
-
-//            $taskId = $novita->img2img(
-//                array_merge($request->getData(), [
-//                    'image_base64' => $media->toBase64(),
-//                ]),
-//                $webhookUrl
-//            );
-
-            $taskId = Str::uuid();
-
-            $aiJob->update([
-                'task_id' => $taskId,
-            ]);
-
-            NovitaAIGeminiHandleResult::dispatch($aiJob, [
-                'image_base64s' => [$media->toBase64()],
-                'prompt' => $request->input('prompt'),
-            ]);
-        } else {
-            $modelMain = $request->input('model_main');
-
-            if ($modelMain === 'gemini_3_pro_image_text_to_image') {
-                $taskId = Str::uuid();
-
-                $aiJob->update([
-                    'task_id' => $taskId,
-                ]);
-
-                NovitaAIGeminiHandleResult::dispatch($aiJob, [
-                    'prompt' => $request->input('prompt'),
-                ]);
-            } else {
-                $taskId = $novita->txt2img(
-                    $request->getData(),
-                    $webhookUrl
-                );
-            }
-        }
+        $taskId = $novita->txt2img(
+            $request->getData(),
+            $webhookUrl
+        );
 
         return response()->json([
             'task_id' => $taskId,
@@ -113,7 +72,45 @@ final class AIController extends Controller
     }
 
     /**
-     * @api {post} /api/ai/img2img 02. IMG2IMG
+     * @api {post} /api/ai/txt2img/gemini 02. TXT2IMG Gemini
+     * @apiVersion 1.0.0
+     * @apiName AITxt2ImgGemini
+     * @apiGroup AI
+     *
+     * @apiParam {String{1-1024}} prompt Текстовий запит для генерації
+     *
+     * @apiSuccessExample {json} Response-Example: HTTP/1.1 200 OK
+     *  {
+     *      "task_id": "f10333f2-2dd7-4f56-a177-e3c02a774d9a"
+     *  }
+     */
+    public function txt2imgGemini(AITxt2ImgGeminiRequest $request)
+    {
+        $user = $request->user();
+
+        /** @var AIJob $aiJob */
+        $aiJob = $user->aijobs()->create([
+            'type' => AIJob::TYPE_TXT2IMG,
+        ]);
+
+        $taskId = Str::uuid();
+
+        $aiJob->update([
+            'task_id' => $taskId,
+        ]);
+
+        NovitaAIGeminiHandleResult::dispatch($aiJob, [
+            'prompt' => $request->input('prompt'),
+        ]);
+
+        return response()->json([
+            'task_id' => $taskId,
+            'ai_job_id' => $aiJob->id,
+        ], JsonResponse::HTTP_CREATED);
+    }
+
+    /**
+     * @api {post} /api/ai/img2img 03. IMG2IMG
      * @apiVersion 1.0.0
      * @apiName AIImg2Img
      * @apiGroup AI
@@ -140,7 +137,7 @@ final class AIController extends Controller
      */
     public function img2img(AIImg2ImgRequest $request, Novita $novita)
     {
-        $user = UserOrGuestAction::run($request->user(), $request->header('sguest'));
+        $user = $request->user();
 
         /** @var AIJob $aiJob */
         $aiJob = $user->aijobs()->create([
@@ -193,7 +190,7 @@ final class AIController extends Controller
     }
 
     /**
-     * @api {post} /api/ai/remove-background 03. Remove Background
+     * @api {post} /api/ai/remove-background 04. Remove Background
      * @apiVersion 1.0.0
      * @apiName AIRemoveBackground
      * @apiGroup AI
@@ -219,7 +216,7 @@ final class AIController extends Controller
      */
     public function removeBackground(AIRemoveBackgroundRequest $request, Novita $novita)
     {
-        $user = UserOrGuestAction::run($request->user(), $request->header('sguest'));
+        $user = $request->user();
 
         $base64 = $novita->removeBackground($request->input('image_file'));
 
@@ -234,7 +231,7 @@ final class AIController extends Controller
     }
 
     /**
-     * @api {post} /api/ai/remove-text 04. Remove Text
+     * @api {post} /api/ai/remove-text 05. Remove Text
      * @apiVersion 1.0.0
      * @apiName AIRemoveText
      * @apiGroup AI
@@ -260,7 +257,7 @@ final class AIController extends Controller
      */
     public function removeText(AIRemoveTextRequest $request, Novita $novita)
     {
-        $user = UserOrGuestAction::run($request->user(), $request->header('sguest'));
+        $user = $request->user();
 
         $base64 = $novita->removeText($request->input('image_file'));
 
@@ -275,7 +272,7 @@ final class AIController extends Controller
     }
 
     /**
-     * @api {post} /api/ai/upscale 05. Upscale
+     * @api {post} /api/ai/upscale 06. Upscale
      * @apiVersion 1.0.0
      * @apiName AIUpscale
      * @apiGroup AI
@@ -291,7 +288,7 @@ final class AIController extends Controller
      */
     public function upscale(AIUpscaleRequest $request, Novita $novita)
     {
-        $user = UserOrGuestAction::run($request->user(), $request->header('sguest'));
+        $user = $request->user();
 
         /** @var AIJob $aiJob */
         $aiJob = $user->aijobs()->create([
