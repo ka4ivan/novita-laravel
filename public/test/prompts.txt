@@ -3,9 +3,21 @@ TXT2IMG
 Oppressive atmosphere | Гнітюча атмосфера
 A haunting, atmospheric photograph of an abandoned urban street at dusk, shrouded in heavy fog. Dim, flickering streetlights cast long shadows over cracked pavement. Faded graffiti, broken windows, and rusted metal details enhance the sense of decay. The color palette is cold and desaturated — deep blues, grays, and muted browns. The air feels heavy and still, evoking loneliness and quiet despair. Cinematic composition, high detail, dramatic contrast, moody lighting
 
+Nature | Природа
+An otherworldly landscape bathed in the light of a twin sunset, with towering crystal mountains reflecting the vibrant colors of the sky. A vast, glowing river of liquid silver winds through an ancient forest of bioluminescent trees, while floating islands hover in the distance, their waterfalls cascading into the mist. The scene is ethereal, serene, yet full of mysterious energy, as stars begin to twinkle in the dusky sky above
 
+Woman | Жінка
+A graceful woman with flowing golden hair stands on the edge of a cliff, overlooking an endless sea under a soft, pastel sunset. She wears an elegant, silver gown that catches the breeze, shimmering like stardust. Her eyes are captivating, filled with wisdom and serenity. Around her, delicate butterflies hover in the warm glow of the setting sun, while the sky above transitions into a deep violet, scattered with twinkling stars. The scene is peaceful, enchanting, and full of a quiet, magical energy
+
+TXT2IMG Lora
+
+Logo in a New Year style | Логотип у новорічному стилі
+New Year style logo
+
+I’m wearing a business suit and have a nice beard | Я в діловому костюмі і гарною бородою
+Man in a business suit with a nice beard
 
 IMG2IMG
 
 black-and-white photo into a natural | Чорно-біле фото в різнокольорове
-Convert this black-and-white photo into a natural, realistic color version. Preserve all original details, lighting, textures, and facial features. Apply accurate skin tones, natural hair color, realistic fabric colors, and true-to-life environmental hues. Make the final image vivid yet authentic, without altering the composition or style
+Convert this black-and-white photo into a natural, realistic color version

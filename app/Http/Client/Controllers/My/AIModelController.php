@@ -129,55 +129,55 @@ final class AIModelController extends Controller
 
         $this->trainingData($request, $aiModel, $novita);
 
-        $aiModel->refresh();
+//        $aiModel->refresh();
 
-        $AIModelRequest = [
-            'name' => $request->input('name'),
-            'base_model' => $request->input('base_model'),
-            'width' => 1024,
-            'height' => 1024,
-            'components' => [
-                [
-                    "name" => "face_crop_region",
-                    "args" => [
-                        [
-                            "name" => "ratio",
-                            "value" => "1.4"
-                        ]
-                    ]
-                ],
-                [
-                    "name" => "resize",
-                    "args" => [
-                        [
-                            "name" => "width",
-                            "value" => "512"
-                        ],
-                        [
-                            "name" => "height",
-                            "value" => "512"
-                        ]
-                    ]
-                ],
-                [
-                    "name" => "face_restore",
-                    "args" => [
-                        [
-                            "name" => "method",
-                            "value" => "gfpgan_1.4"
-                        ],
-                        [
-                            "name" => "upscale",
-                            "value" => "1.0"
-                        ]
-                    ]
-                ]
-            ],
-            'image_dataset_items' => $aiModel->data->map->only([
-                'assets_id',
-                'caption',
-            ])->toArray()
-        ];
+//        $AIModelRequest = [
+//            'name' => $request->input('name'),
+//            'base_model' => $request->input('base_model'),
+//            'width' => 1024,
+//            'height' => 1024,
+//            'components' => [
+//                [
+//                    "name" => "face_crop_region",
+//                    "args" => [
+//                        [
+//                            "name" => "ratio",
+//                            "value" => "1.4"
+//                        ]
+//                    ]
+//                ],
+//                [
+//                    "name" => "resize",
+//                    "args" => [
+//                        [
+//                            "name" => "width",
+//                            "value" => "512"
+//                        ],
+//                        [
+//                            "name" => "height",
+//                            "value" => "512"
+//                        ]
+//                    ]
+//                ],
+//                [
+//                    "name" => "face_restore",
+//                    "args" => [
+//                        [
+//                            "name" => "method",
+//                            "value" => "gfpgan_1.4"
+//                        ],
+//                        [
+//                            "name" => "upscale",
+//                            "value" => "1.0"
+//                        ]
+//                    ]
+//                ]
+//            ],
+//            'image_dataset_items' => $aiModel->data->map->only([
+//                'assets_id',
+//                'caption',
+//            ])->toArray()
+//        ];
 
 //        $aiModel->setAttribute('task_id', $novita->trainingSubject($AIModelRequest));
 //        $aiModel->saveOrFail();

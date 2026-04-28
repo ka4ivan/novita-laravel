@@ -130,7 +130,6 @@ class Novita
         return $response->json('task_id');
     }
 
-
     /**
      * @param array $request
      * @return array
@@ -141,6 +140,23 @@ class Novita
     {
         $response = $this->client()
             ->post('v3/gemini-3-pro-image-edit', $request);
+
+        \Llog::info($response->json());
+        $this->validateResponse($response);
+
+        return $response->json();
+    }
+
+    /**
+     * @param array $request
+     * @return array
+     * @throws ConnectionException
+     * @throws NovitaException
+     */
+    public function gemini3ProImageTextToImage(array $request): array
+    {
+        $response = $this->client()
+            ->post('v3/gemini-3-pro-image-text-to-image', $request);
 
         \Llog::info($response->json());
         $this->validateResponse($response);

@@ -4,19 +4,19 @@ namespace App\Http\Client\Controllers;
 
 use App\Actions\Ai\NovitaAIJobRefreshResult;
 use App\Actions\Ai\NovitaAIGeminiHandleResult;
-use App\Actions\Users\UserOrGuestAction;
-use App\Events\AITaskSucceed;
+use App\Http\Client\Requests\AIImg2ImgGeminiRequest;
+use App\Http\Client\Requests\AIImg2ImgQwenRequest;
 use App\Http\Client\Requests\AIImg2ImgRequest;
 use App\Http\Client\Requests\AIRemoveBackgroundRequest;
 use App\Http\Client\Requests\AIRemoveTextRequest;
+use App\Http\Client\Requests\AITxt2ImgGeminiRequest;
 use App\Http\Client\Requests\AITxt2ImgRequest;
 use App\Http\Client\Requests\AIUpscaleRequest;
 use App\Http\Client\Resources\MediaShowResource;
 use App\Models\AIJob;
-use App\Models\AIModel;
 use App\Services\Novita\Novita;
-use App\Services\Novita\NovitaDownloader;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 final class AIController extends Controller
@@ -51,7 +51,7 @@ final class AIController extends Controller
      */
     public function txt2img(AITxt2ImgRequest $request, Novita $novita)
     {
-        $user = UserOrGuestAction::run($request->user(), $request->header('sguest'));
+        $user = $request->user();
 
         /** @var AIJob $aiJob */
         $aiJob = $user->aijobs()->create([
@@ -63,23 +63,10 @@ final class AIController extends Controller
             'aiJobId' => $aiJob->id,
         ]);
 
-        if ($request->input('loras')) {
-            $aiModel = AIModel::query()->with('data.media')->where('name', $request->input('loras.0.model_name'))->firstOrFail();
-            $aiTrainingData = $aiModel->data->first();
-            $media = $aiTrainingData->getFirstMedia('image');
-
-            $taskId = $novita->img2img(
-                array_merge($request->getData(), [
-                    'image_base64' => $media->toBase64(),
-                ]),
-                $webhookUrl
-            );
-        } else {
-            $taskId = $novita->txt2img(
-                $request->getData(),
-                $webhookUrl
-            );
-        }
+        $taskId = $novita->txt2img(
+            $request->getData(),
+            $webhookUrl
+        );
 
         return response()->json([
             'task_id' => $taskId,
@@ -88,7 +75,46 @@ final class AIController extends Controller
     }
 
     /**
-     * @api {post} /api/ai/img2img 02. IMG2IMG
+     * @api {post} /api/ai/txt2img/gemini 02. TXT2IMG Gemini
+     * @apiVersion 1.0.0
+     * @apiName AITxt2ImgGemini
+     * @apiGroup AI
+     *
+     * @apiParam {String{1-1024}} prompt Текстовий запит для генерації
+     * @apiParam {String="1:1","3:2","2:3","3:4","4:3","4:5","5:4","9:16","16:9","21:9"} aspect_ratio Співвідношення сторін
+     *
+     * @apiSuccessExample {json} Response-Example: HTTP/1.1 200 OK
+     *  {
+     *      "task_id": "f10333f2-2dd7-4f56-a177-e3c02a774d9a"
+     *  }
+     */
+    public function txt2imgGemini(AITxt2ImgGeminiRequest $request)
+    {
+        $user = $request->user();
+
+        /** @var AIJob $aiJob */
+        $aiJob = $user->aijobs()->create([
+            'type' => AIJob::TYPE_TXT2IMG,
+        ]);
+
+        $taskId = Str::uuid();
+
+        $aiJob->update([
+            'task_id' => $taskId,
+        ]);
+
+        NovitaAIGeminiHandleResult::dispatch($aiJob, [
+            'prompt' => $request->input('prompt'),
+        ]);
+
+        return response()->json([
+            'task_id' => $taskId,
+            'ai_job_id' => $aiJob->id,
+        ], JsonResponse::HTTP_CREATED);
+    }
+
+    /**
+     * @api {post} /api/ai/img2img 03. IMG2IMG
      * @apiVersion 1.0.0
      * @apiName AIImg2Img
      * @apiGroup AI
@@ -115,7 +141,7 @@ final class AIController extends Controller
      */
     public function img2img(AIImg2ImgRequest $request, Novita $novita)
     {
-        $user = UserOrGuestAction::run($request->user(), $request->header('sguest'));
+        $user = $request->user();
 
         /** @var AIJob $aiJob */
         $aiJob = $user->aijobs()->create([
@@ -127,39 +153,10 @@ final class AIController extends Controller
             'aiJobId' => $aiJob->id,
         ]);
 
-        $modelMain = $request->input('model_main');
-
-        if ($modelMain === 'qween_image_edit') {
-            $taskId = $novita->qwenImageEdit(
-                array_merge($request->getData(), [
-                    'image' => $request->image_base64,
-                ]),
-            );
-
-            $aiJob->update([
-                'task_id' => $taskId,
-            ]);
-
-            NovitaAIJobRefreshResult::dispatch($aiJob);
-
-        } elseif ($modelMain === 'gemini_3_pro_image_edit') { // TODO Зберегти результат
-            $taskId = Str::uuid();
-
-            $aiJob->update([
-                'task_id' => $taskId,
-            ]);
-
-            NovitaAIGeminiHandleResult::dispatch($aiJob, [
-                'image_base64s' => [$request->image_base64],
-                'prompt' => $request->input('prompt'),
-            ]);
-
-        } else {
-            $taskId = $novita->img2img(
-                $request->getData(),
-                $webhookUrl
-            );
-        }
+        $taskId = $novita->img2img(
+            $request->getData(),
+            $webhookUrl
+        );
 
         return response()->json([
             'task_id' => $taskId,
@@ -168,7 +165,97 @@ final class AIController extends Controller
     }
 
     /**
-     * @api {post} /api/ai/remove-background 03. Remove Background
+     * @api {post} /api/ai/img2img/gemini 04. IMG2IMG Gemini
+     * @apiVersion 1.0.0
+     * @apiName AIImg2ImgGemini
+     * @apiGroup AI
+     *
+     * @apiParam {Array} image_base64s Масив де кожен елемент BASE64 зображення
+     * @apiParam {String{1-1024}} prompt Текстовий запит для генерації
+     * @apiParam {String="1:1","3:2","2:3","3:4","4:3","4:5","5:4","9:16","16:9","21:9"} aspect_ratio Співвідношення сторін
+     *
+     * @apiSuccessExample {json} Response-Example: HTTP/1.1 200 OK
+     *  {
+     *      "task_id": "f10333f2-2dd7-4f56-a177-e3c02a774d9a"
+     *  }
+     */
+    public function img2imgGemini(AIImg2ImgGeminiRequest $request)
+    {
+        $user = $request->user();
+
+        /** @var AIJob $aiJob */
+        $aiJob = $user->aijobs()->create([
+            'type' => AIJob::TYPE_IMG2IMG,
+        ]);
+
+        $taskId = Str::uuid();
+
+        $aiJob->update([
+            'task_id' => $taskId,
+        ]);
+
+        $imageUrls = collect($request->file('image_base64s', []))
+            ->map(function ($file) use ($aiJob) {
+                $path = $file->store("tmp/ai/{$aiJob->id}", 'public');
+
+                return Storage::disk('public')->url($path);
+            })
+            ->all();
+
+        NovitaAIGeminiHandleResult::dispatch($aiJob, array_merge($request->getData(), [
+            'image_urls' => $imageUrls,
+        ]));
+
+        return response()->json([
+            'task_id' => $taskId,
+            'ai_job_id' => $aiJob->id,
+        ], JsonResponse::HTTP_CREATED);
+    }
+
+
+    /**
+     * @api {post} /api/ai/img2img/gemini 05. IMG2IMG Qwen
+     * @apiVersion 1.0.0
+     * @apiName AIImg2ImgQwen
+     * @apiGroup AI
+     *
+     * @apiParam {Array} image Зображення
+     * @apiParam {String{1-1024}} prompt Текстовий запит для генерації
+     * @apiParam {Number=-1+} seed Початкове зерно генерації (-1 — випадкове)
+     * @apiParam {String="jpeg","png","webp"} output_format Формат фото
+     *
+     * @apiSuccessExample {json} Response-Example: HTTP/1.1 200 OK
+     *  {
+     *      "task_id": "f10333f2-2dd7-4f56-a177-e3c02a774d9a"
+     *  }
+     */
+    public function img2imgQwen(AIImg2ImgQwenRequest $request, Novita $novita)
+    {
+        $user = $request->user();
+
+        /** @var AIJob $aiJob */
+        $aiJob = $user->aijobs()->create([
+            'type' => AIJob::TYPE_IMG2IMG,
+        ]);
+
+        $taskId = $novita->qwenImageEdit(
+            array_merge($request->getData()),
+        );
+
+        $aiJob->update([
+            'task_id' => $taskId,
+        ]);
+
+        NovitaAIJobRefreshResult::dispatch($aiJob);
+
+        return response()->json([
+            'task_id' => $taskId,
+            'ai_job_id' => $aiJob->id,
+        ], JsonResponse::HTTP_CREATED);
+    }
+
+    /**
+     * @api {post} /api/ai/remove-background 06. Remove Background
      * @apiVersion 1.0.0
      * @apiName AIRemoveBackground
      * @apiGroup AI
@@ -194,7 +281,7 @@ final class AIController extends Controller
      */
     public function removeBackground(AIRemoveBackgroundRequest $request, Novita $novita)
     {
-        $user = UserOrGuestAction::run($request->user(), $request->header('sguest'));
+        $user = $request->user();
 
         $base64 = $novita->removeBackground($request->input('image_file'));
 
@@ -209,7 +296,7 @@ final class AIController extends Controller
     }
 
     /**
-     * @api {post} /api/ai/remove-text 04. Remove Text
+     * @api {post} /api/ai/remove-text 07. Remove Text
      * @apiVersion 1.0.0
      * @apiName AIRemoveText
      * @apiGroup AI
@@ -235,7 +322,7 @@ final class AIController extends Controller
      */
     public function removeText(AIRemoveTextRequest $request, Novita $novita)
     {
-        $user = UserOrGuestAction::run($request->user(), $request->header('sguest'));
+        $user = $request->user();
 
         $base64 = $novita->removeText($request->input('image_file'));
 
@@ -250,7 +337,7 @@ final class AIController extends Controller
     }
 
     /**
-     * @api {post} /api/ai/upscale 05. Upscale
+     * @api {post} /api/ai/upscale 08. Upscale
      * @apiVersion 1.0.0
      * @apiName AIUpscale
      * @apiGroup AI
@@ -266,7 +353,7 @@ final class AIController extends Controller
      */
     public function upscale(AIUpscaleRequest $request, Novita $novita)
     {
-        $user = UserOrGuestAction::run($request->user(), $request->header('sguest'));
+        $user = $request->user();
 
         /** @var AIJob $aiJob */
         $aiJob = $user->aijobs()->create([

@@ -5,7 +5,9 @@ namespace App\Actions\Users;
 use App\Models\User;
 use Lorisleiva\Actions\Concerns\AsAction;
 
-// В майбутньому зробити підтримку неавторизованим робити генерацію
+/**
+ * @deprecated
+ */
 class UserOrGuestAction
 {
     use AsAction;
