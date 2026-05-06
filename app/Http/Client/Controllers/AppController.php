@@ -2,7 +2,6 @@
 
 namespace App\Http\Client\Controllers;
 
-use App\Actions\Users\UserOrGuestAction;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -26,7 +25,7 @@ final class AppController extends Controller
     public function glob(Request $request)
     {
         /** @var User $user */
-        $user = UserOrGuestAction::run($request->user(), $request->header('sguest'));
+        $user = $request->user();
 
         return response()->json([
             // дані авторизованого користувача/гостя
