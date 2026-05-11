@@ -16,6 +16,12 @@ class NovitaAIGeminiHandleResult
 {
     use AsAction, AsJob, InteractsWithQueue, SerializesModels;
 
+    public string $queue = 'ai';
+
+    public int $timeout = 300;
+
+    public int $tries = 1;
+
     public function handle(AIJob $AIJob, array $data): void
     {
         $task = (new Novita(config('services.novita.key')))
