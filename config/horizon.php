@@ -193,6 +193,17 @@ return [
             'timeout' => 60,
             'nice' => 0,
         ],
+        'supervisor-ai' => [
+            'connection' => 'redis',
+            'queue' => ['ai'],
+            'balance' => 'auto',
+            'maxProcesses' => 2,
+            'balanceMaxShift' => 1,
+            'balanceCooldown' => 3,
+            'memory' => 512,
+            'tries' => 1,
+            'timeout' => 300,
+        ],
 //        'supervisor-messages' => [
 //            'connection' => 'redis',
 //            'queue' => ['messages'],
@@ -210,6 +221,9 @@ return [
                 'maxProcesses' => 1,
                 'balanceMaxShift' => 1,
                 'balanceCooldown' => 3,
+            ],
+            'supervisor-ai' => [
+                'maxProcesses' => 1,
             ],
 //            'supervisor-messages' => [
 //                'maxProcesses' => 6,
